@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ドッカイズ！</title>
+
+ <style>
+/* ==========================================
+   1. アプリ全体のベース設定（修正版）
+   ========================================== */
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #FFF3E0; /* 1〜2年生：淡いオレンジ */
+  transition: background-color 0.5s ease;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  text-align: center;
+}
+
+/* レベル別の背景色クラス（bodyに付与される） */
+body.bg-level2 {
+  background-color: #E8F5E9; /* 3〜4年生：淡い黄緑 */
+}
+
+body.bg-level3 {
+  background-color: #E3F2FD; /* 5〜6年生：淡い水色 */
+}
+
+/* 💡 画面の非表示設定（!important の優先度を最優先にして確実に隠す） */
+.hidden {
+  display: none !important;
+}
+
+
+/* ==========================================
+   2. スタート画面（タイトル画面）のスタイル（修正版）
+   ========================================== */
+#start-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* スタート画面のロゴの外枠 */
+#start-screen .title-logo {
+  margin: 40px auto 5px auto; /* 確実に中央寄せ */
+  width: 100%;
+  max-width: 450px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  display: block;
+}
+
+/* ロゴ画像自体の設定 */
+#start-screen #app-logo {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+/* 「えらんでね！」の文字 */
+#start-screen .subtitle {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #FF6F00;
+  margin: 0 auto 30px auto; /* 確実に中央寄せ */
+  display: block;
+}
+
+/* ボタンをまとめるメニュー外枠 */
+.level-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto; /* メニューの箱自体を画面の真ん中に配置 */
+  padding: 0;
+}
+
+/* レベル選択ボタン（ガタつき防止 ＆ 中央維持版） */
+.level-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* ボタンの中身（星と文字）は左ベースで並べる */
+  padding: 15px 25px;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.level-btn:active {
+  transform: scale(0.95);
+}
+
+/* ボタン個別の色 */
+.lvl-1 { background-color: #FF9800; }
+.lvl-2 { background-color: #4CAF50; }
+.lvl-3 { background-color: #2196F3; }
+
+/* 星のエリア（横幅を完全に固定して文字の位置を揃える） */
+.stars {
+  font-size: 1.1rem;
+  width: 65px;         /* 星3つ分が余裕を持って収まる幅に完全固定 */
+  text-align: left;    /* 星は左詰めで表示 */
+  display: inline-block !important;
+  flex-shrink: 0;      /* 画面が狭くなっても縮まないように固定 */
+}
+
+/* ボタンのテキスト */
+.btn-text {
+  text-align: left;    /* 文字の開始位置を左に揃える */
+  padding-left: 10px;   /* 星との間の隙間 */
+}
+
+
+/* ===================================================
+   3. クイズ画面のスタイル（新UI：中央画像1枚＆下部文章3択カード）
+   =================================================== */
+#quiz-screen {
+  max-width: 1340px;   /* CRELANDER W87の実機横幅に完全フィット */
+  height: 100vh;       /* 画面全体の縦幅いっぱいに固定 */
+  margin: 0 auto;      /* 画面中央に配置 */
+  padding: 12px 16px;  /* 縦スクロールを防ぐため余白を狭めに調整 */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;    /* 💡 子ども向けUIの離脱原因となるスクロールを100%禁止 */
+}
+
+/* 「だい1もん / ぜん5もん」のバッジ */
+.progress-text {
+  display: inline-block;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #ff9800;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin: 0 auto 8px auto; /* 下の隙間を縮小 */
+  box-shadow: 0 4px 0 #e65100;
+}
+
+/* 問題文のテキストボックス */
+h1 {
+  font-size: 26px;      /* 子どもたちがパッと一瞬で読める巨大サイズ */
+  line-height: 1.4;
+  color: #2e7d32;
+  background: white;
+  border: 3px solid #a5d6a7;
+  border-radius: 16px;
+  padding: 12px 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 10px auto; /* 隙間を最適化 */
+  box-sizing: border-box;
+  box-shadow: 0 4px 0 #c8e6c9;
+  text-align: left;     /* 左詰めで視認性を維持 */
+}
+
+/* 【重要】16:9正解画像専用の新しい中央配置コンテナ */
+.main-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex-grow: 1;         /* 画面内の余った縦幅をこの画像エリアに最大割り当て */
+  max-height: 42vh;     /* 画面の42%以内に抑えて下部ボタンのスペースを絶対死守 */
+  margin: 0 auto 12px auto;
+}
+
+.main-image-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;  /* 💡 16:9の比率を絶対に歪ませず美しく表示 */
+  border: 4px solid #ffcc80;
+  border-radius: 20px;
+  box-shadow: 0 6px 0 #ffe0b2;
+  background-color: #fff;
+  display: block;
+}
+
+/* 3枚の文章選択肢カードを並べるエリア（3列グリッド横並び） */
+.quiz-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 💡 3つのボタンを完全に等倍で横に並べる */
+  gap: 16px;            /* カード同士の程よい隙間 */
+  width: 100%;
+  max-height: 24vh;     /* ボタンエリアの縦幅を24%以内に抑えてスクロールを撲滅 */
+  margin-bottom: 4px;
+  padding: 2px 0;
+  box-sizing: border-box;
+}
+
+/* 文章選択肢のカード（画像なし・純粋なステップ表示用リッチボタン） */
+.image-card {
+  background: white;
+  border: 4px solid #ffcc80;
+  border-radius: 20px;
+  padding: 14px 16px;
+  box-shadow: 0 6px 0 #ffe0b2;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s, border-color 0.1s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 上に文章、下にラベルをきれいに配置 */
+  box-sizing: border-box;
+  height: 100%;         /* グリッド内の縦幅いっぱいに自動拡張 */
+}
+
+/* カード内の指示文章テキスト */
+.card-text {
+  font-size: 20px;      /* 文字量を削ぎ落としたため、大きく読みやすいサイズに設定 */
+  text-align: left;
+  line-height: 1.5;
+  color: #2c3e50;
+  font-weight: bold;
+  word-break: break-all;
+}
+
+/* カード下部の「せんたくし1」などのラベル */
+.label {
+  margin-top: auto;     /* 常に一番下にロック */
+  font-size: 15px;
+  font-weight: bold;
+  color: #e65100;
+  text-align: center;
+}
+
+/* 実機タップ時のリアルな押し込み視覚フィードバック（アクセシビリティ対応） */
+.image-card:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #ffe0b2;
+  border-color: #ffb74d;
+}
+
+/* --- 正解のアニメーション（上にはずむ） --- */
+.image-card.correct-anim {
+  animation: bounce 0.5s ease-in-out;
+  border-color: #4caf50 !important;
+  box-shadow: 0 6px 0 #c8e6c9 !important;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-20px); } /* 画面外へのはみ出しを防ぐため跳ねを少し抑制 */
+}
+
+/* --- 不正解のアニメーション（左右に震える） --- */
+.image-card.wrong-anim {
+  animation: shake 0.4s ease-in-out;
+  border-color: #f44336 !important;
+  box-shadow: 0 6px 0 #ffcdd2 !important;
+}
+
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-10px); }
+  40%, 80% { transform: translateX(10px); }
+}
+
+@keyframes shakeX {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-10px); }
+  40%, 80% { transform: translateX(10px); }
+}
+
+/* クイズコンテナ全体のスライドイン（次移行時） */
+.slide-in {
+  animation: slideInFromRight 0.4s ease-out;
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+/* カードの下の「せんたくし1」などの文字 */
+.label {
+  margin-top: 12px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #e65100;
+  text-align: center;
+}
+
+/* ○×判定のメッセージボックス */
+.result-message {
+  min-height: 80px;
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  padding: 10px;
+  border-radius: 15px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.result-correct {
+  color: #2e7d32;
+  background-color: #e8f5e9;
+  border: 2px solid #a5d6a7;
+}
+
+.result-wrong {
+  color: #c62828;
+  background-color: #ffebee;
+  border: 2px solid #ffcdd2;
+}
+
+/* つぎの問題へボタン */
+.next-btn {
+  display: none;
+  background-color: #4caf50;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  border: none;
+  padding: 15px 50px;
+  border-radius: 40px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #2e7d32;
+  transition: all 0.1s;
+  margin: 20px auto 0 auto !important; /* 確実に真ん中に配置 */
+}
+
+.next-btn:hover {
+  background-color: #43a047;
+  transform: translateY(2px);
+  box-shadow: 0 4px 0 #2e7d32;
+}
+
+/* 次の問題が右から入ってくるアニメーション */
+.slide-in {
+  animation: slideInLeft 0.4s ease-out forwards;
+}
+
+@keyframes slideInLeft {
+  0% {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+
+/* ==========================================
+   4. キャラクター「ラジカくん」の設定
+   ========================================== */
+/* ラジカくんの画像だけを中央に配置する外枠 */
+.radika-standalone-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 20px auto;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* ラジカくんの画像（吹き出し廃止の単体版スタイル） */
+#radika-avatar, .radika-standalone-img {
+  width: 140px;          
+  height: auto;
+  object-fit: contain;  /* 画像が見切れるのを完全に防ぐ */
+  transition: transform 0.2s;
+  /* ほんのり上下に揺らして生きている感を出すアニメーション */
+  animation: radika-gentle-float 2s ease-in-out infinite alternate;
+}
+
+@keyframes radika-gentle-float {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-8px); } /* 少しだけ上に浮かぶ */
+}
+
+/* ※吹き出しの旧仕様パーツ（互換性のために維持） */
+.radika-container {
+  text-align: center;
+  margin: 15px auto;
+}
+.radika-talk-box {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 10px;
+}
+.radika-img {
+  width: 90px;
+  height: auto;
+  animation: gentle-float 2s ease-in-out infinite alternate;
+}
+@keyframes gentle-float {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-6px); }
+}
+.speech-bubble {
+  position: relative;
+  background: #ffffff;
+  border: 4px solid #ffcc80;
+  border-radius: 20px;
+  padding: 12px 20px;
+  box-shadow: 0 6px 0 #ffe0b2;
+  flex: 1;
+}
+.speech-bubble::before {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-style: solid;
+  border-width: 10px 16px 10px 0;
+  border-color: transparent #ffcc80 transparent transparent;
+}
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-style: solid;
+  border-width: 8px 12px 8px 0;
+  border-color: transparent #ffffff transparent transparent;
+}
+.speech-bubble p {
+  margin: 0;
+  color: #5d4037;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1.5;
+}
+
+
+/* ==========================================
+   5. クリアモーダル（ポップアップ）と星のエフェクト
+   ========================================== */
+.clear-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.clear-content {
+  background: white;
+  border: 6px solid #ffb74d;
+  border-radius: 32px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 12px 0 #ffe0b2, 0 20px 30px rgba(0,0,0,0.2);
+  width: 80%;
+  max-width: 450px;
+  box-sizing: border-box;
+  animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popUp {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.clear-icon {
+  font-size: 64px;
+  animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+
+.clear-content h2 {
+  color: #ff9800;
+  font-size: 28px;
+  margin: 15px 0 10px;
+}
+
+.clear-content p {
+  color: #5d4037;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* 「もういちどあそぶ」ボタン */
+#restart-button {
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 12px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0 6px 0 #388e3c;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+#restart-button:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #388e3c;
+}
+
+/* 降ってくる星のスタイル */
+.clear-star {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 999999; /* 絶対に一番手前に表示されるように超巨大な数値にする */
+  animation: fallAndFade 2s ease-in forwards; 
+}
+
+@keyframes fallAndFade {
+  0% {
+    transform: translateY(-50px) rotate(0deg) scale(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(50px) rotate(50deg) scale(1.3);
+  }
+  100% {
+    transform: translateY(105vh) rotate(360deg) scale(0.7);
+    opacity: 0;
+  }
+}
+  </style>
+</head>
+
+<body>
+  <!-- スタート画面（修正版） -->
+  <div id="start-screen">
+    <!-- タイトルをテキストからロゴ画像に変更 -->
+    <h1 class="title-logo">
+      <img src="logo.png" alt="ドッカイズ！" id="app-logo">
+    </h1>
+  
+    <p class="subtitle">えらんでね！</p>
+  
+    <div class="level-menu">
+      <button class="level-btn lvl-1" onclick="startQuiz('1')">
+        <span class="stars">⭐</span>
+        <span class="btn-text">1・2ねんせい</span>
+      </button>
+      <button class="level-btn lvl-2" onclick="startQuiz('2')">
+        <span class="stars">⭐⭐</span>
+        <span class="btn-text">3・4ねんせい</span>
+      </button>
+      <button class="level-btn lvl-3" onclick="startQuiz('3')">
+        <span class="stars">⭐⭐⭐</span>
+        <span class="btn-text">5・6ねんせい</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- クイズ画面（初期状態は hidden で隠しておく） -->
+  <div id="quiz-screen" class="hidden">
+    <div style="margin-top: 10px; margin-bottom: 10px;">
+      <img src="logo.png" alt="ドッカイズ！ロゴ" style="max-width: 300px; width: 100%; height: auto;">
+    </div>
+
+    <div id="progress" class="progress-text">データをよみこみ中...</div>
+
+    <h1 id="question-text">読み込み中...</h1>
+
+    <div id="quiz-container" class="quiz-container"></div>
+
+    <div id="result-box" class="result-message" style="display: none;"></div>
+
+    <div>
+      <button id="next-button" class="next-btn" onclick="nextQuestion()">つぎの問題へ ➔</button>
+    </div>
+
+    <!-- 💡 ラジカくんの画像だけを表示するシンプルな枠組みに書き換えます -->
+    <div class="radika-standalone-container">
+      <img id="radika-avatar" class="radika-standalone-img" src="radika.png" alt="ラジカくん">
+    </div>
+
+    <!-- 🔧 先生・おうちのひと用の問題追加エリア（パスワード保護版） -->
+    <div style="margin: 50px auto 20px; max-width: 600px; padding: 20px; border: 2px dashed #ccc; border-radius: 12px; background-color: #f9f9f9; font-family: sans-serif;">
+      <h3 style="margin-top: 0; color: #333; font-size: 16px; text-align: center;">⚙️ せんせい・おうちのひと用 かんり画面</h3>
+  
+      <!-- 💡 追記：パスワード入力エリア -->
+      <div id="admin-auth-box" style="margin-bottom: 15px; padding: 12px; background-color: #fff3e0; border-radius: 8px; text-align: left;">
+        <label for="admin-password" style="font-size: 13px; font-weight: bold; color: #e65100; display: block; margin-bottom: 5px;">🔑 パスワードを入力してロックを解除してね：</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="password" id="admin-password" placeholder="パスワードを入力" style="flex: 1; padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+          <button onclick="checkAdminPassword()" style="padding: 8px 15px; font-size: 13px; font-weight: bold; background-color: #e65100; color: white; border: none; border-radius: 6px; cursor: pointer;">解除</button>
+        </div>
+      </div>
+
+      <!-- 💡 変更：ロック解除前は非表示にするため、id="admin-main-form" と style="display:none;" を付与 -->
+      <div id="admin-main-form" style="display: none;">
+        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
+          ChatGPTが出力した「アプリ登録用データ（JSON）」を下の枠にそのまま貼り付けて、「問題を追加する」ボタンを押してください。
+        </p>
+
+        <!-- 問題のレベル（学年）を選択するドロップダウンエリア -->
+        <div style="margin-bottom: 15px; text-align: left;">
+          <label for="admin-level-select" style="font-size: 13px; font-weight: bold; color: #444; display: block; margin-bottom: 6px;">📚 このもんだいの学年（レベル）：</label>
+          <select id="admin-level-select" style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; background-color: #fff; color: #333; font-weight: bold; cursor: pointer;">
+            <option value="1">1・2ねんせい （レベル 1）</option>
+            <option value="2">3・4ねんせい （レベル 2）</option>
+            <option value="3">5・6ねんせい （レベル 3）</option>
+          </select>
+        </div>
+
+        <textarea id="admin-json-input" placeholder='ここにJSONデータを貼り付けてね（例：{ "id": 12, ... }）' style="width: 100%; height: 120px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: monospace; font-size: 13px; resize: vertical;"></textarea>
+
+        <div style="margin-top: 12px; text-align: center;">
+          <button onclick="addCustomQuestion()" style="padding: 10px 20px; font-size: 14px; font-weight: bold; background-color: #4caf50; color: white; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            ➕ 新しい問題を追加する
+          </button>
+          <button onclick="resetCustomQuestions()" style="padding: 10px 15px; font-size: 12px; background-color: #f44336; color: white; border: none; border-radius: 6px; cursor: pointer; margin-left: 10px; opacity: 0.8;">
+            🗑️ 追加した問題をすべて消去
+          </button>
+        </div>
+
+        <!-- 💡 追記：データのバックアップ（エクスポート・インポート）エリア -->
+        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed #ccc; text-align: center; display: flex; justify-content: center; gap: 10px; align-items: center;">
+          <!-- 📤 エクスポートボタン -->
+          <button onclick="exportQuestionsToFile()" style="padding: 8px 15px; font-size: 12px; font-weight: bold; background-color: #0288d1; color: white; border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+            📤 もんだいを保存（バックアップ）
+          </button>
+
+          <!-- 📥 インポートボタン（見えないファイル選択ボックスと連携） -->
+          <input type="file" id="import-file-input" accept=".json" onchange="importQuestionsFromFile(this)" style="display: none;">
+          <button onclick="document.getElementById('import-file-input').click()" style="padding: 8px 15px; font-size: 12px; font-weight: bold; background-color: #7b1fa2; color: white; border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+            📥 バックアップから復元
+          </button>
+        </div>
+      </div> <!-- admin-main-form の閉じタグ -->
+    </div>
+  </div>
+
+
+  <script>
+        // 🌟 設定：1回のゲームで何問出題するか
+    const QUESTIONS_PER_GAME = 10;
+
+    let allQuizData = [];           // すべてのデータが入る配列
+    let currentPlayQuestions = [];  // 今回プレイする問題が入る配列
+    let currentQuestionIndex = 0;   // 現在の問題の番号
+    // 💡 現在選択されている問題のヒント情報を保持する変数
+    let currentHints = { hint1: "", hint2: "" }; 
+
+    // レベルを選択してクイズを開始する関数
+    function startQuiz(selectedLevel) {
+      // 1. ボディの背景色クラスを一度すべてリセット
+      document.body.classList.remove('bg-level2', 'bg-level3');
+  
+      // 2. 選択されたレベルに応じて背景色を切り替える
+      if (selectedLevel === '2') {
+        document.body.classList.add('bg-level2'); // 淡い黄緑
+      } else if (selectedLevel === '3') {
+        document.body.classList.add('bg-level3'); // 淡い水色
+      } // '1' の場合はクラスがつかないので標準の淡いオレンジ
+
+      // 3. 全データ（allQuizData）から、選んだレベルの問題だけを抽出（フィルター）
+      // 💡 安全設計：既存のデータに level キーが無い場合は、自動的に「1（小学1〜2年生）」とみなします
+      let levelFilteredQuestions = allQuizData.filter(quiz => {
+        const lvl = quiz.level || '1'; 
+        return lvl === selectedLevel;
+      });
+
+      // 万が一、選択されたレベルの問題が1問もない場合のガード処理
+      if (levelFilteredQuestions.length === 0) {
+        alert('まだこのレベルの問題が登録されていないよ！かんり画面から追加してね。');
+        return;
+      }
+
+      // 4. 💡【重要】選ばれたレベルの問題だけでシャッフルを行い、指定の問数（5問）を抜き出す
+      for (let i = levelFilteredQuestions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [levelFilteredQuestions[i], levelFilteredQuestions[j]] = [levelFilteredQuestions[j], levelFilteredQuestions[i]];
+      }
+      
+      // ゲームで使用する問題配列に、切り出した問題をセット
+      const limit = Math.min(QUESTIONS_PER_GAME, levelFilteredQuestions.length);
+      currentPlayQuestions = levelFilteredQuestions.slice(0, limit);
+
+      // 5. 画面を切り替える
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('quiz-screen').classList.remove('hidden');
+
+      // 6. クイズの初期化（1問目を読み込んで表示する）
+      currentQuestionIndex = 0;
+      loadQuestion(); // 💡既存の読み込み関数（loadQuestion）を呼び出してスタート！
+    }
+
+    async function initApp() {
+      try {
+        // 1. 元々の quiz.json（1〜11問）を読み込む
+        const response = await fetch('quiz.json');
+        if (!response.ok) throw new Error('JSONファイルの読み込みに失敗しました');
+        const jsonQuestions = await response.json();
+        
+        // 2. ブラウザ（LocalStorage）に保存されている「追加問題」があれば読み込む
+        const localQuestionsData = localStorage.getItem('dockais_added_questions');
+        const localQuestions = localQuestionsData ? JSON.parse(localQuestionsData) : [];
+        
+        // 3. 元のデータと追加データを合体させる！
+        allQuizData = [...jsonQuestions, ...localQuestions];
+        
+        // 💡【変更】アプリ起動時はデータ読み込みだけを行い、自動スタート（setupGame）はさせない
+        console.log('データの読み込みが完了しました！問題数:', allQuizData.length);
+        
+      } catch (error) {
+        console.error(error);
+        document.getElementById('question-text').innerText = 'エラー：もんだいデータが よみこめませんでした。';
+      }
+    }
+
+    // 💡 setupGame関数は役割をstartQuizに統合したため、中身を空にするか削除して大丈夫です
+    function setupGame() {
+      // 互換性のために残す場合は空欄にします
+    }
+
+
+    // 💡 txtファイルの読み込み（fetch）がなくなり、一瞬で画面が切り替わる安全な関数に進化しました
+    function loadQuestion() {
+        if (currentPlayQuestions.length == 0) return;
+        const currentQuiz = currentPlayQuestions[currentQuestionIndex];
+        
+        // 1. ヘッダー情報のセット
+        document.getElementById('progress').innerText = `だい ${currentQuestionIndex + 1} もん / ぜん ${currentPlayQuestions.length} もん`;
+        
+        // 2. 問題文指示テキストの表示
+        document.getElementById('question-text').innerText = currentQuiz.questionText;
+        
+        // 3. 不正解時のヒントの記録
+        currentHints.hint1 = currentQuiz.hint1 || "よくよんでみよう！";
+        currentHints.hint2 = currentQuiz.hint2 || "もういちどチャレンジ！";
+        
+        // 4. UI表示状態のリセット
+        document.getElementById('next-button').style.display = 'none';
+        const resultBox = document.getElementById('result-box');
+        resultBox.style.display = 'none';
+        resultBox.className = 'result-message';
+        
+        // 5. メイン画像エリアの構築（古い画像コンテナがあれば削除して新設）
+        let existingImgContainer = document.querySelector('.main-image-container');
+        if (existingImgContainer) {
+            existingImgContainer.remove();
+        }
+        
+        if (currentQuiz.questionImage) {
+            const mainImgContainer = document.createElement('div');
+            mainImgContainer.className = 'main-image-container';
+            mainImgContainer.innerHTML = `<img src="${currentQuiz.questionImage}" alt="もんだいのえ">`;
+            
+            // 問題文（#question-text）のすぐ後ろに画像を挿入
+            const qText = document.getElementById('question-text');
+            qText.parentNode.insertBefore(mainImgContainer, qText.nextSibling);
+        }
+        
+        // 6. 選択肢コンテナのクリア
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = '';
+        
+        // 7. 選択肢配列の安全な取得
+        let choices = [];
+        if (Array.isArray(currentQuiz.choices)) {
+            choices = [...currentQuiz.choices];
+        } else if (currentQuiz.choices && typeof currentQuiz.choices === 'object') {
+            choices = [
+                { text: currentQuiz.choices.correct, isCorrect: true, type: 'correct' },
+                { text: currentQuiz.choices.wrong1, isCorrect: false, type: 'hint1' },
+                { text: currentQuiz.choices.wrong2, isCorrect: false, type: 'hint2' }
+            ];
+        }
+        
+        // 8. 選択肢のシャッフル
+        const shuffledChoices = [...choices];
+        for (let i = shuffledChoices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffledChoices[i], shuffledChoices[j]] = [shuffledChoices[j], shuffledChoices[i]];
+        }
+        
+        // 9. テキスト選択肢カードの生成と配置
+        shuffledChoices.forEach((choice, index) => {
+            const card = document.createElement('div');
+            card.className = 'image-card';
+            card.onclick = function () { checkAnswer(choice, this); };
+            
+            // 改行コード（\n）をHTMLの改行に自動変換
+            const formattedText = choice.text.replace(/\n/g, '<br>');
+            
+            card.innerHTML = `
+                <div class="card-text">${formattedText}</div>
+                <div class="label">せんたくし ${index + 1}</div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+
+
+
+    const correctSound = new Audio('correct.mp3');
+    const wrongSound = new Audio('wrong.mp3');
+    const fanfareSound = new Audio('fanfare.mp3');
+
+    // 💡 不正解の処理からも「fetch」が消え、一瞬で優しいヒントが出るようになります
+    function checkAnswer(choice, cardElement) {
+      if (cardElement.classList.contains('correct-anim') || cardElement.classList.contains('wrong-anim')) {
+        return;
+      }
+
+      const resultBox = document.getElementById('result-box');
+      const radikaAvatar = document.getElementById('radika-avatar'); 
+      resultBox.style.display = 'block';
+
+      if (radikaAvatar) {
+        radikaAvatar.classList.remove('radika-happy', 'radika-shock');
+      }
+
+      if (choice.isCorrect) {
+        cardElement.classList.add('correct-anim');
+
+        if (radikaAvatar) {
+          radikaAvatar.src = 'radika_correct.png';
+          radikaAvatar.classList.add('radika-happy');
+        }
+
+        correctSound.currentTime = 0;
+        correctSound.play();
+
+        resultBox.className = 'result-message result-correct';
+        resultBox.innerHTML = "🎉 せいかい！よくよめたね！<br>「つぎの問題へ」ボタンをおしてすすもう！";
+        document.getElementById('next-button').style.display = 'inline-block';
+      } else {
+        cardElement.classList.add('wrong-anim');
+
+        if (radikaAvatar) {
+          radikaAvatar.src = 'radika_wrong.png';
+          radikaAvatar.classList.add('radika-shock');
+        }
+
+        wrongSound.currentTime = 0;
+        wrongSound.play();
+
+        resultBox.className = 'result-message result-wrong';
+    
+        // 🌟 【進化点】選択肢のタイプに合わせて、記録していたヒントを一瞬で表示！
+        const targetHint = choice.type === 'hint1' ? currentHints.hint1 : currentHints.hint2;
+        resultBox.innerHTML = `❌ ざんねん！もういちどよくよんでみよう！<br><span style="font-size:18px; font-weight:normal;">${targetHint}</span>`;
+    
+        document.getElementById('next-button').style.display = 'none';
+
+        setTimeout(() => {
+          cardElement.classList.remove('wrong-anim');
+          if (radikaAvatar) {
+            radikaAvatar.classList.remove('radika-shock');
+          }
+        }, 400);
+      }
+    }
+
+    function nextQuestion() {      
+      currentQuestionIndex++;
+      const radikaAvatar = document.getElementById('radika-avatar');
+
+      if (radikaAvatar) {
+        radikaAvatar.classList.remove('radika-happy', 'radika-shock');
+      }
+
+      if (currentQuestionIndex < currentPlayQuestions.length) {
+        loadQuestion();
+        
+        // 💡 安全装置：triggerSlideAnimation が定義されていない場合でもエラーで止まらないようにする
+        if (typeof triggerSlideAnimation === 'function') {
+          triggerSlideAnimation();
+        } else {
+          // 関数がない場合は、クイズコンテナに直接アニメーションクラスを付与する
+          const container = document.getElementById('quiz-container');
+          if (container) {
+            container.classList.remove('slide-in');
+            void container.offsetWidth; // 画面を強制再描画させてアニメーションをリセット
+            container.classList.add('slide-in');
+          }
+        }
+        
+        if (radikaAvatar) radikaAvatar.src = 'radika.png';
+      } else {
+        const clearModal = document.getElementById('clear-modal');
+        if (clearModal) {
+          clearModal.style.display = 'flex';
+        }
+        
+        try {
+          if (radikaAvatar) radikaAvatar.src = 'radika_complete.png';
+        } catch(e) { console.error(e); }
+        
+        try {
+          if (typeof fanfareSound !== 'undefined' && fanfareSound) {
+            fanfareSound.currentTime = 0;
+            fanfareSound.play();
+          }
+        } catch(e) { console.error(e); }
+        
+        startStarShower();
+      }
+    }
+
+    let starInterval; 
+    function startStarShower() {
+      if (starInterval) clearInterval(starInterval);
+      
+      starInterval = setInterval(() => {
+        try {
+          const star = document.createElement('div');
+          star.className = 'clear-star';
+          
+          const emojis = ['⭐', '✨', '🎉', '🌟'];
+          star.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+          
+          star.style.position = 'fixed';
+          star.style.top = '0';
+          star.style.left = Math.random() * 100 + 'vw';        
+          star.style.fontSize = (Math.random() * 24 + 16) + 'px'; 
+          star.style.pointerEvents = 'none';
+          star.style.zIndex = '999999';
+          star.style.animationDuration = (Math.random() * 1.5 + 1.5) + 's';
+          
+          document.body.appendChild(star);
+          
+          setTimeout(() => { star.remove(); }, 3000);
+        } catch(e) {
+          clearInterval(starInterval);
+        }
+      }, 80); 
+    }
+
+    function closeClearModal() {
+      // 1. クリアモーダル（ポップアップ）を閉じる
+      const clearModal = document.getElementById('clear-modal');
+      if (clearModal) {
+        clearModal.style.display = 'none';
+      }
+      
+      // 2. 画面に残っているキラキラの星エフェクトを完全に消去する
+      if (starInterval) clearInterval(starInterval);
+      const remainingStars = document.querySelectorAll('.clear-star');
+      remainingStars.forEach(star => star.remove());
+      
+      // 3. ファンファーレ音楽を止める
+      try {
+        if (typeof fanfareSound !== 'undefined' && fanfareSound) {
+          fanfareSound.pause();
+          fanfareSound.currentTime = 0; // 音を最初に戻す
+        }
+      } catch(e) { console.error(e); }
+      
+      // 4. ラジカくんの画像とアニメーションを元通り（通常時）にリセットする
+      const radikaAvatar = document.getElementById('radika-avatar');
+      if (radikaAvatar) {
+        radikaAvatar.src = 'radika.png';
+        radikaAvatar.className = 'radika-standalone-img'; // 通常のふわふわアニメーションに戻す
+      }
+
+      // 5. 💡【重要】クイズ画面を隠して、最初の「スタート画面」をもう一度表示する
+      document.getElementById('quiz-screen').classList.add('hidden');
+      document.getElementById('start-screen').classList.remove('hidden');
+      
+      // 6. 💡【重要】レベル別の背景色を一度リセットして元の淡いオレンジに戻す
+      document.body.classList.remove('bg-level2', 'bg-level3');
+
+      // 7. 最新のデータ状態を読み込み直して、次のプレイの選択を待つ
+      initApp();
+    }
+
+
+    function triggerSlideAnimation() {
+      const container = document.getElementById('quiz-container');
+      container.classList.remove('slide-in');
+      void container.offsetWidth; 
+      container.classList.add('slide-in');
+    }
+
+        // 💡 先生が貼り付けたJSONデータをブラウザに保存する関数
+    function addCustomQuestion() {
+      const inputTextArea = document.getElementById('admin-json-input');
+      const jsonText = inputTextArea.value.trim();
+      
+      if (!jsonText) {
+        alert('JSONデータが入力されていません！');
+        return;
+      }
+      
+      try {
+        // 貼り付けられたテキストが正しいJSON形式かチェック
+        const newQuestion = JSON.parse(jsonText);
+        
+        // 最低限必要な情報（idや問題文）が入っているか確認
+        if (!newQuestion.id || !newQuestion.questionText) {
+          alert('問題データの形式が正しくないようです。「id」や「questionText」が含まれているか確認してください。');
+          return;
+        }
+        
+        // すでに保存されている追加分のリストを取得
+        const localQuestionsData = localStorage.getItem('dockais_added_questions');
+        let localQuestions = localQuestionsData ? JSON.parse(localQuestionsData) : [];
+        
+        // 同じIDの問題がすでに登録されていないか重複チェック
+        const isDuplicate = localQuestions.some(q => q.id === newQuestion.id);
+        if (isDuplicate) {
+          if (!confirm(`すでに問題ID「${newQuestion.id}」は追加されています。上書きしますか？`)) {
+            return;
+          }
+          // 重複している古い問題を一度削除
+          localQuestions = localQuestions.filter(q => q.id !== newQuestion.id);
+        }
+        
+        // 新しい問題をリストに加えて保存
+        localQuestions.push(newQuestion);
+        localStorage.setItem('dockais_added_questions', JSON.stringify(localQuestions));
+        
+        alert(`🎉 問題ID「q${newQuestion.id}」をアプリに追加しました！\nフォルダ「q${newQuestion.id}」の中にイラスト画像が入っていることを確認してください。`);
+        
+        // フォームを空にして画面を再起動し、新しい問題を出題対象に含める
+        inputTextArea.value = '';
+        initApp();
+        
+      } catch (error) {
+        console.error(error);
+        alert('❌ エラー：JSONの形式が正しくありません。ChatGPTが出力したコードブロックをそっくりそのままコピーできているか確認してください。');
+      }
+    }
+
+    // 💡 追加した問題をすべてリセットして最初の11問に戻す関数
+    function resetCustomQuestions() {
+      if (confirm('これまで追加した問題をすべて削除し、最初の11問だけの状態に戻しますか？')) {
+        localStorage.removeItem('dockais_added_questions');
+        alert('追加した問題をリセットしました。');
+        initApp();
+      }
+    }
+
+    // 💡 追記：管理画面のパスワードチェック関数
+    function checkAdminPassword() {
+      // 🌟 ここに好きなパスワードを設定してください（現在は 'radika-admin' になっています）
+      const CORRECT_PASSWORD = 'radika-admin'; 
+      
+      const inputPassword = document.getElementById('admin-password').value;
+      const adminMainForm = document.getElementById('admin-main-form');
+      const authBox = document.getElementById('admin-auth-box');
+
+      if (inputPassword === CORRECT_PASSWORD) {
+        alert('🔓 パスワードが合っていました！管理画面を開きます。');
+        adminMainForm.style.display = 'block'; // 本体のフォームを表示
+        authBox.style.display = 'none';         // パスワード入力欄を隠す
+      } else {
+        alert('❌ パスワードが違います。もう一度入力してください。');
+        document.getElementById('admin-password').value = ''; // 入力欄をクリア
+      }
+    }
+
+        // 💡 追記：追加した問題をJSONファイルとしてパソコンに保存（ダウンロード）する関数
+    function exportQuestionsToFile() {
+      // LocalStorageから追加問題データを取得
+      const localQuestionsData = localStorage.getItem('dockais_added_questions');
+      
+      if (!localQuestionsData || JSON.parse(localQuestionsData).length === 0) {
+        alert('まだ新しく追加された問題がありません。データを保存するには問題を1問以上追加してください。');
+        return;
+      }
+
+      // JSONデータを綺麗に整形してテキスト化
+      const jsonText = JSON.stringify(JSON.parse(localQuestionsData), null, 2);
+      
+      // ブラウザにダウンロードさせるための仕組み（Blobオブジェクト）を作成
+      const blob = new Blob([jsonText], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      // 一時的なリンクを作って自動的にクリック（ダウンロード実行）
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dockais_backup_questions.json'; // ダウンロードされるファイル名
+      document.body.appendChild(a);
+      a.click();
+      
+      // 後片付け
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // 💡 追記：パソコンに保存したJSONファイルを読み込んでLocalStorageを復元する関数
+    function importQuestionsFromFile(inputElement) {
+      const file = inputElement.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          
+          // 読み込んだデータが正しい配列の形式かチェック
+          if (!Array.isArray(importedData)) {
+            alert('❌ エラー：ファイルのデータ形式が正しくありません。');
+            return;
+          }
+
+          if (!confirm(`保存ファイルから ${importedData.length} 問の問題を復元しますか？\n（※現在アプリに追加されているカスタム問題は上書きされます）`)) {
+            inputElement.value = ''; // ファイル選択をクリア
+            return;
+          }
+
+          // LocalStorageに保存してアプリを再起動
+          localStorage.setItem('dockais_added_questions', JSON.stringify(importedData));
+          alert('🎉 バックアップから問題を無事に復元しました！');
+          
+          inputElement.value = ''; // ファイル選択をクリア
+          initApp(); // スタート画面に戻して再読み込み
+          
+        } catch (error) {
+          console.error(error);
+          alert('❌ エラー：ファイルの読み込みに失敗しました。正しいJSONファイルか確認してください。');
+          inputElement.value = '';
+        }
+      };
+      
+      reader.readAsText(file);
+    }
+    
+    window.onload = initApp;
+  </script>
+
+
+  <!-- クリアポップアップの枠枠 -->
+  <div id="clear-modal" class="clear-modal">
+    <div class="clear-content">
+      <div class="clear-icon">🏆</div>
+      <h2>クリアおめでとう！</h2>
+      <p>すべてのもんだいに せいかいしたよ！<br>すごすぎる！がんばったね！</p>
+      <button id="restart-button" onclick="closeClearModal()">もういちど あそぶ</button>
+    </div>
+  </div>
+  
+
+</body>
+
+</html>

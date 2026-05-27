@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>アセット一括ダウンロード</title>
+  <!-- 💡 ボタン一つでZIPを作るための外部ライブラリを読み込みます -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body style="font-family:sans-serif; padding:20px; max-width:700px; margin:0 auto; background-color:#fafafa; color:#333;">
+  <h2>クイズアセット 一括保存（だい 11 もん：がっこうの うんどうかいで たまいれ 白玉と赤玉のかず）</h2>
+  
+  <div style="background:white; padding:30px; border:2px solid #4caf50; border-radius:12px; margin-bottom:25px; text-align:center;">
+    <h3>📦 ボタンひとつでフォルダごと保存！</h3>
+    <p>下のボタンを押すと、問題文・ヒント・ダミー画像がすべて入った<strong>「q11.zip」</strong>がダウンロードされます。</p>
+    
+    <button onclick="downloadAllAsZip()" style="padding:15px 30px; font-size:18px; background-color:#4caf50; border:none; color:white; font-weight:bold; border-radius:8px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+      📥 q11 のアセットをまとめてZIP保存
+    </button>
+    <p style="font-size:12px; color:#666; margin-top:10px;">※解凍すると、そのままアプリで使える「q11」フォルダが出てきます。</p>
+  </div>
+
+  <hr style="margin:30px 0;">
+  <h3>🎨 画像生成用プロンプト（AIへのコピペ用）</h3>
+  
+  <div style="margin-bottom:20px; padding:15px; background:white; border:1px solid #ddd; border-radius:8px;">
+    <strong>🟢 正解画像用のプロンプト</strong><br>
+    <textarea id="p_correct" style="width:100%; height:90px; margin:5px 0;" readonly>がっこうの うんどうかいの たまいれ。しろい たまが 6こ、あかい たまが 3こ かごに はいっている。みぎから 2ばんめの しろい たまが かごの ふちに のっている。こどもたちが にこにこしている。ポップで可愛い子供向け絵本のタッチ。優しいパステルカラー、太くて丸みのあるシンプルな輪郭線。背景はシンプルでごちゃごちゃしていない。3Dやリアルな表現は禁止。文字やテキストは入れない。</textarea><br>
+    <button onclick="copyPrompt('p_correct')" style="padding:5px 15px; cursor:pointer;">プロンプトをコピー</button>
+  </div>
+
+  <div style="margin-bottom:20px; padding:15px; background:white; border:1px solid #ddd; border-radius:8px;">
+    <strong>🔴 ひっかけA用のプロンプト</strong><br>
+    <textarea id="p_wrong1" style="width:100%; height:90px; margin:5px 0;" readonly>がっこうの うんどうかいの たまいれ。しろい たまが 5こ、あかい たまが 3こ かごに はいっている。みぎから 2ばんめの しろい たまが かごの ふちに のっている。こどもたちが にこにこしている。ポップで可愛い子供向け絵本のタッチ。優しいパステルカラー、太くて丸みのあるシンプルな輪郭線。背景はシンプルでごちゃごちゃしていない。3Dやリアルな表現は禁止。文字やテキストは入れない。</textarea><br>
+    <button onclick="copyPrompt('p_wrong1')" style="padding:5px 15px; cursor:pointer;">プロンプトをコピー</button>
+  </div>
+
+  <div style="margin-bottom:20px; padding:15px; background:white; border:1px solid #ddd; border-radius:8px;">
+    <strong>🔵 ひっかけB用のプロンプト</strong><br>
+    <textarea id="p_wrong2" style="width:100%; height:90px; margin:5px 0;" readonly>がっこうの うんどうかいの たまいれ。しろい たまが 6こ、あかい たまが 4こ かごに はいっている。みぎから 3ばんめの しろい たまが かごの ふちに のっている。こどもたちが にこにこしている。ポップで可愛い子供向け絵本のタッチ。優しいパステルカラー、太くて丸みのあるシンプルな輪郭線。背景はシンプルでごちゃごちゃしていない。3Dやリアルな表現は禁止。文字やテキストは入れない。</textarea><br>
+    <button onclick="copyPrompt('p_wrong2')" style="padding:5px 15px; cursor:pointer;">プロンプトをコピー</button>
+  </div>
+
+  <!-- ダミー画像生成用の一時キャンバス -->
+  <canvas id="dummyCanvas" width="300" height="300" style="display:none;"></canvas>
+
+  <script>
+    async function downloadAllAsZip() {
+      const zip = new JSZip();
+      const qNum = "11";
+      
+      // 1. テキストファイルをZIPに追加
+      zip.file(`q${qNum}_text.txt`, `がっこうの うんどうかいで たまいれを しました。しろい たまが 6こ、あかい たまが 3こ かごに はいりました。みぎから 2ばんめの しろい たまが かごの ふちに のっていました。しろい たまの えを えらびましょう。`);
+      
+      zip.file(`q${qNum}_hint1.txt`, `しろい たまの かずを ゆっくり かぞえて みよう。`);
+      
+      zip.file(`q${qNum}_hint2.txt`, `みぎから なんばんめかを よく みなおして みよう。`);
+      
+      // 2. ダミーのPNG画像を生成してZIPに追加
+      const canvas = document.getElementById('dummyCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // キャンバスをBlob（データ）に変換してZIPに詰め込む関数
+      const addCanvasToZip = (filename) => {
+        return new Promise((resolve) => {
+          canvas.toBlob((blob) => {
+            zip.file(filename, blob);
+            resolve();
+          }, 'image/png');
+        });
+      };
+      
+      await addCanvasToZip(`correct_q${qNum}.png`);
+      await addCanvasToZip(`wrong1_q${qNum}.png`);
+      await addCanvasToZip(`wrong2_q${qNum}.png`);
+      
+      // 3. ZIPファイルを生成してダウンロード
+      zip.generateAsync({ type: "blob" }).then(function(content) {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(content);
+        link.setAttribute("download", `q${qNum}.zip`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    }
+
+    function copyPrompt(id) {
+      const textarea = document.getElementById(id);
+      textarea.select();
+      document.execCommand("copy");
+      alert("コピーしました！画像生成AIにそのまま貼り付けてね。");
+    }
+  </script>
+</body>
+</html>
