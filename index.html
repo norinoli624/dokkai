@@ -130,18 +130,20 @@ body.bg-level3 {
 
 
 /* ===================================================
-   3. クイズ画面のスタイル（新UI：中央画像1枚＆下部文章3択カード）
+   3. クイズ画面のスタイル（新UI：横幅フル活用・中央画像＆文章3択）
    =================================================== */
 #quiz-screen {
-  max-width: 1340px;   /* CRELANDER W87の実機横幅に完全フィット */
-  height: 100vh;       /* 画面全体の縦幅いっぱいに固定 */
-  margin: 0 auto;      /* 画面中央に配置 */
-  padding: 12px 16px;  /* 縦スクロールを防ぐため余白を狭めに調整 */
+  width: 100vw;        /* 🚀 左右の余白を完全撲滅し、画面の横幅いっぱいに広げる */
+  max-width: 100%;     /* 制限を解除 */
+  height: 100vh;       /* 縦幅を画面ぴったりに固定 */
+  margin: 0;
+  padding: 10px 24px;  /* 上下は狭く、左右は程よくあける */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  overflow: hidden;    /* 💡 子ども向けUIの離脱原因となるスクロールを100%禁止 */
+  overflow: hidden;    /* スクロールを100%禁止 */
+  background-color: #f7f9fc;
 }
 
 /* 「だい1もん / ぜん5もん」のバッジ */
@@ -151,44 +153,44 @@ body.bg-level3 {
   font-weight: bold;
   color: #fff;
   background-color: #ff9800;
-  padding: 6px 16px;
+  padding: 6px 20px;
   border-radius: 20px;
-  margin: 0 auto 8px auto; /* 下の隙間を縮小 */
+  margin: 0 auto 6px auto;
   box-shadow: 0 4px 0 #e65100;
+  text-align: center;
 }
 
-/* 問題文のテキストボックス */
+/* 問題文のテキストボックス（横いっぱいに広げて読みやすく） */
 h1 {
-  font-size: 26px;      /* 子どもたちがパッと一瞬で読める巨大サイズ */
+  font-size: 24px;      /* 子どもが一瞬で読める巨大サイズ */
   line-height: 1.4;
   color: #2e7d32;
   background: white;
   border: 3px solid #a5d6a7;
   border-radius: 16px;
   padding: 12px 20px;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto 10px auto; /* 隙間を最適化 */
+  width: 100%;         /* 横幅を限界まで広げる */
+  margin: 0 auto 10px auto;
   box-sizing: border-box;
   box-shadow: 0 4px 0 #c8e6c9;
-  text-align: left;     /* 左詰めで視認性を維持 */
+  text-align: left;
 }
 
-/* 【重要】16:9正解画像専用の新しい中央配置コンテナ */
+/* 16:9正解画像専用の中央配置コンテナ */
 .main-image-container {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   flex-grow: 1;         /* 画面内の余った縦幅をこの画像エリアに最大割り当て */
-  max-height: 42vh;     /* 画面の42%以内に抑えて下部ボタンのスペースを絶対死守 */
-  margin: 0 auto 12px auto;
+  max-height: 44vh;     /* 画像の縦潰れを防ぐ限界値 */
+  margin: 0 auto 10px auto;
 }
 
 .main-image-container img {
   max-width: 100%;
   max-height: 100%;
-  object-fit: contain;  /* 💡 16:9の比率を絶対に歪ませず美しく表示 */
+  object-fit: contain;  /* 16:9の比率を絶対に歪ませない */
   border: 4px solid #ffcc80;
   border-radius: 20px;
   box-shadow: 0 6px 0 #ffe0b2;
@@ -196,15 +198,18 @@ h1 {
   display: block;
 }
 
-/* 3枚の文章選択肢カードを並べるエリア（3列グリッド横並び） */
+/* 3枚の文章選択肢カードを並べるエリア（画面いっぱいに3列等倍） */
 .quiz-container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 💡 3つのボタンを完全に等倍で横に並べる */
-  gap: 16px;            /* カード同士の程よい隙間 */
-  width: 100%;
-  max-height: 24vh;     /* ボタンエリアの縦幅を24%以内に抑えてスクロールを撲滅 */
-  margin-bottom: 4px;
-  padding: 2px 0;
+  display: grid !important; /* 強制的にグリッド化 */
+  grid-template-columns: repeat(3, 1fr) !important; /* 🚀 古い横幅制限を無視し、3つ等倍で横いっぱいに広げる */
+  flex-direction: unset !important; /* 古いflex設定を解除 */
+  justify-content: unset !important;
+  gap: 20px;            /* カード同士の隙間 */
+  width: 100% !important;
+  max-width: 100% !important; /* 制限を完全解除 */
+  height: 28vh !important;    /* 縦幅を28%に固定し、文字が溢れないようにする */
+  margin: 0 auto 4px auto;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -213,61 +218,65 @@ h1 {
   background: white;
   border: 4px solid #ffcc80;
   border-radius: 20px;
-  padding: 14px 16px;
+  padding: 16px;
   box-shadow: 0 6px 0 #ffe0b2;
   cursor: pointer;
   transition: transform 0.1s, box-shadow 0.1s, border-color 0.1s;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* 上に文章、下にラベルをきれいに配置 */
+  justify-content: space-between;
   box-sizing: border-box;
-  height: 100%;         /* グリッド内の縦幅いっぱいに自動拡張 */
+  width: 100% !important;   /* グリッド幅いっぱいに広げる */
+  max-width: 100% !important; /* 古い320px制限を完全破壊 */
+  height: 100% !important;   /* 縦幅をコンテナに合わせる */
 }
 
-/* カード内の指示文章テキスト */
+/* 【重要】カード内の指示文章テキスト（文字が綺麗に収まるように微調整） */
 .card-text {
-  font-size: 20px;      /* 文字量を削ぎ落としたため、大きく読みやすいサイズに設定 */
+  font-size: 16px;      /* 8.68インチの横長カードで4〜5行が美しく収まる絶妙なサイズ */
   text-align: left;
-  line-height: 1.5;
+  line-height: 1.4;
   color: #2c3e50;
   font-weight: bold;
   word-break: break-all;
+  overflow-y: auto;     /* 万が一文字が多くてもカード内でスクロールを許可するセーフティ */
+}
+
+/* カード内の古い画像を非表示にする（新UIでは使用しないため） */
+.image-card img {
+  display: none !important;
 }
 
 /* カード下部の「せんたくし1」などのラベル */
 .label {
-  margin-top: auto;     /* 常に一番下にロック */
+  margin-top: auto;
+  padding-top: 4px;
   font-size: 15px;
   font-weight: bold;
   color: #e65100;
   text-align: center;
+  border-top: 1px dashed #ffe0b2; /* 区切り線をつけて見やすく */
 }
 
-/* 実機タップ時のリアルな押し込み視覚フィードバック（アクセシビリティ対応） */
+/* タップ時のリアルな押し込みフィードバック */
 .image-card:active {
   transform: translateY(4px);
   box-shadow: 0 2px 0 #ffe0b2;
   border-color: #ffb74d;
 }
 
-/* --- 正解のアニメーション（上にはずむ） --- */
+/* --- 正解・不正解アニメーション --- */
 .image-card.correct-anim {
   animation: bounce 0.5s ease-in-out;
   border-color: #4caf50 !important;
   box-shadow: 0 6px 0 #c8e6c9 !important;
 }
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-20px); } /* 画面外へのはみ出しを防ぐため跳ねを少し抑制 */
-}
-
-/* --- 不正解のアニメーション（左右に震える） --- */
 .image-card.wrong-anim {
   animation: shake 0.4s ease-in-out;
   border-color: #f44336 !important;
   box-shadow: 0 6px 0 #ffcdd2 !important;
 }
+
 
 
 @keyframes shake {
