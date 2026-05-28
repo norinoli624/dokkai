@@ -160,20 +160,24 @@ body.bg-level3 {
   text-align: center;
 }
 
-/* 問題文のテキストボックス（横いっぱいに広げて読みやすく） */
+/* ===================================================
+   ① 問題文（h1）の修正：横長画面での間延びを防ぎ、スリムに中央寄せ
+   =================================================== */
 h1 {
-  font-size: 24px;      /* 子どもが一瞬で読める巨大サイズ */
-  line-height: 1.4;
+  font-size: 22px;      /* 子どもが読みやすい最適なサイズ */
+  line-height: 1.5;
   color: #2e7d32;
   background: white;
   border: 3px solid #a5d6a7;
   border-radius: 16px;
   padding: 12px 20px;
-  width: 100%;         /* 横幅を限界まで広げる */
-  margin: 0 auto 10px auto;
+  width: 95%;
+  max-width: 960px;    /* 🚀 横幅を最大960pxに制限し、横に広がりすぎるのを完全に防ぎます */
+  margin: 0 auto 10px auto; /* 画面中央に寄せつつ、下の余白をキープ */
   box-sizing: border-box;
   box-shadow: 0 4px 0 #c8e6c9;
   text-align: left;
+  white-space: pre-wrap; /* 💡 JSONの改行（\n）をブラウザ上で100%確実に反映させる */
 }
 
 /* ===================================================
@@ -204,24 +208,43 @@ h1 {
 }
 
 /* ===================================================
-   マスコット「ラジカくん」のコンテナ位置調整
+   ② ラジカくん（#result-box）の修正：
+   選択肢に絶対に被らない「画面中央の特大ポップアップ（モーダル）」仕様
    =================================================== */
-/* 💡 現在中央に浮いているラジカくんのコンテナのCSS（#result-boxなど）を見つけて
-   以下のように「画面の右下（または左下）」に固定する配置に書き換えます */
-#result-box, .mascot-container {
+#result-box {
   position: fixed !important;
-  bottom: 20px !important;  /* 画面の一番下から20px浮かす */
-  right: 20px !important;   /* 画面の右端から20pxに固定（選択肢に被らない安全地帯） */
-  left: auto !important;    /* 中央寄せの設定を解除 */
-  transform: none !important;
-  z-index: 9999;            /* 一番手前に表示 */
+  top: 50% !important;     /* 🚀 画面の縦中央 */
+  left: 50% !important;    /* 🚀 画面の横中央 */
+  transform: translate(-50%, -50%) !important; /* 完全に画面の真ん中にロック */
+  background-color: rgba(255, 255, 255, 0.98) !important; /* 背景を真っ白にして後ろの文字を隠す */
+  border: 6px solid #ff9800 !important;
+  border-radius: 24px !important;
+  padding: 24px 40px !important;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3) !important; /* 浮き出るような影 */
+  z-index: 99999 !important; /* 3択カードや画像よりも絶対に手前に表示 */
+  display: none;           /* 最初は非表示 */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 350px !important;
 }
 
-/* ラジカくんのイラストサイズ自体も、邪魔にならない適切な大きさに固定 */
-#result-box img, .mascot-container img {
-  width: 100px !important;  /* ほどよいサイズに調整 */
+/* ポップアップ内のラジカくんイラストのサイズ */
+#result-box img {
+  width: 140px !important; /* しっかり目立つサイズに拡大 */
   height: auto !important;
+  margin-bottom: 12px;
 }
+
+/* ポップアップ内の「せいかい！」「ざんねん！」の文字 */
+#result-box .result-text {
+  font-size: 28px !important;
+  font-weight: bold !important;
+  color: #e65100 !important;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
 
 /* 3枚の文章選択肢カードを並べるエリア（画面いっぱいに3列等倍） */
 .quiz-container {
