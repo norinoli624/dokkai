@@ -133,16 +133,16 @@ body.bg-level3 {
    3. クイズ画面のスタイル（新UI：横幅フル活用・中央画像＆文章3択）
    =================================================== */
 #quiz-screen {
-  width: 100vw;        /* 🚀 左右の余白を完全撲滅し、画面の横幅いっぱいに広げる */
-  max-width: 100%;     /* 制限を解除 */
-  height: 100vh;       /* 縦幅を画面ぴったりに固定 */
+  width: 100vw;
+  max-width: 100%;
+  min-height: 100vh;   /* 💡 height: 100vhから「min-height」に変更し、縦に伸びられるようにする */
   margin: 0;
-  padding: 10px 24px;  /* 上下は狭く、左右は程よくあける */
+  padding: 10px 24px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  overflow: hidden;    /* スクロールを100%禁止 */
+  overflow-y: auto;    /* 🚀 重要：文字が溢れた古い問題の時だけ、自動で縦スクロールを許可する */
   background-color: #f7f9fc;
 }
 
