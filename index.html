@@ -245,6 +245,43 @@ h1 {
   text-align: center;
 }
 
+/* ===================================================
+   ポップアップ内専用：子どもが押しやすい巨大ボタンのスタイル
+   =================================================== */
+.modal-buttons {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.action-btn {
+  font-size: 22px !important;
+  font-weight: bold !important;
+  color: white !important;
+  padding: 12px 32px !important;
+  border-radius: 50px !important;
+  border: none !important;
+  cursor: pointer !important;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.2) !important;
+  transition: transform 0.1s !important;
+  width: 85%;
+  max-width: 280px;
+}
+.action-btn:active {
+  transform: translateY(4px) !important;
+  box-shadow: none !important;
+}
+
+/* 「もういちど考える」は注意を促すオレンジ色 */
+.retry-layout {
+  background-color: #ff9800 !important;
+}
+/* 「次の問題へ」はワクワクする黄緑色 */
+.next-layout {
+  background-color: #4caf50 !important;
+}
+
 
 /* 3枚の文章選択肢カードを並べるエリア（画面いっぱいに3列等倍） */
 .quiz-container {
@@ -661,7 +698,17 @@ h1 {
 
     <div id="quiz-container" class="quiz-container"></div>
 
-    <div id="result-box" class="result-message" style="display: none;"></div>
+    <!-- 🚀 大改善：ボタンをすべて内包した中央ポップアップエリア -->
+    <div id="result-box" class="result-message" style="display: none;">
+        <!-- ラジカくんのイラストやメッセージがここに入ります -->
+        <div id="result-content"></div>
+        
+        <!-- ポップアップ専用の操作ボタンエリア -->
+        <div class="modal-buttons">
+            <button id="retry-button" class="action-btn retry-layout" style="display: none;" onclick="closeModal()">もういちど 考える</button>
+            <button id="next-button" class="action-btn next-layout" style="display: none;" onclick="nextQuestion()">つぎの もんだいへ ➔</button>
+        </div>
+    </div>
 
     <div>
       <button id="next-button" class="next-btn" onclick="nextQuestion()">つぎの問題へ ➔</button>
@@ -897,7 +944,7 @@ h1 {
     const wrongSound = new Audio('wrong.mp3');
     const fanfareSound = new Audio('fanfare.mp3');
 
-    // 💡 不正解の処理からも「fetch」が消え、一瞬で優しいヒントが出るようになります
+    // 🚀 大改善：音声・アバター処理を維持したまま、ボタン内包＆閉じる機能を追加
     function checkAnswer(choice, cardElement) {
       if (cardElement.classList.contains('correct-anim') || cardElement.classList.contains('wrong-anim')) {
         return;
@@ -905,13 +952,19 @@ h1 {
 
       const resultBox = document.getElementById('result-box');
       const radikaAvatar = document.getElementById('radika-avatar'); 
-      resultBox.style.display = 'block';
+      const retryButton = document.getElementById('retry-button');
+      const nextButton = document.getElementById('next-button');
+
+      // 最初にボタンの表示状況をリセット
+      if (retryButton) retryButton.style.display = 'none';
+      if (nextButton) nextButton.style.display = 'none';
 
       if (radikaAvatar) {
         radikaAvatar.classList.remove('radika-happy', 'radika-shock');
       }
 
       if (choice.isCorrect) {
+        // 【正解のときの処理】
         cardElement.classList.add('correct-anim');
 
         if (radikaAvatar) {
@@ -919,13 +972,22 @@ h1 {
           radikaAvatar.classList.add('radika-happy');
         }
 
+        // 🔊 音声を再生
         correctSound.currentTime = 0;
         correctSound.play();
 
         resultBox.className = 'result-message result-correct';
-        resultBox.innerHTML = "🎉 せいかい！よくよめたね！<br>「つぎの問題へ」ボタンをおしてすすもう！";
-        document.getElementById('next-button').style.display = 'inline-block';
+        
+        // 💡 骨組みの中身を構築（アバター画像エリアの下にテキストと次の問題ボタンを配置）
+        resultBox.innerHTML = `
+            <div class="result-text" style="color: #4caf50 !important; font-size: 26px; font-weight: bold; margin-bottom: 10px;">🎉 せいかい！よくよめたね！</div>
+            <img id="radika-avatar" src="radika_correct.png" class="radika-happy" style="width: 130px; height: auto; margin-bottom: 12px;">
+            <div class="modal-buttons">
+                <button id="next-button" class="action-btn next-layout" onclick="nextQuestion()">つぎの もんだいへ ➔</button>
+            </div>
+        `;
       } else {
+        // 【不正解のときの処理】
         cardElement.classList.add('wrong-anim');
 
         if (radikaAvatar) {
@@ -933,24 +995,38 @@ h1 {
           radikaAvatar.classList.add('radika-shock');
         }
 
+        // 🔊 音声を再生
         wrongSound.currentTime = 0;
         wrongSound.play();
 
         resultBox.className = 'result-message result-wrong';
     
-        // 🌟 【進化点】選択肢のタイプに合わせて、記録していたヒントを一瞬で表示！
+        // 選択肢のタイプに合わせて、記録していたヒントを取得
         const targetHint = choice.type === 'hint1' ? currentHints.hint1 : currentHints.hint2;
-        resultBox.innerHTML = `❌ ざんねん！もういちどよくよんでみよう！<br><span style="font-size:18px; font-weight:normal;">${targetHint}</span>`;
-    
-        document.getElementById('next-button').style.display = 'none';
+        
+        // 💡 骨組みの中身を構築（ヒントを表示し、もう一度考えるボタンを配置）
+        resultBox.innerHTML = `
+            <div class="result-text" style="color: #f44336 !important; font-size: 24px; font-weight: bold; margin-bottom: 10px;">❌ ざんねん！もういちどよくよんでみよう！</div>
+            <img id="radika-avatar" src="radika_wrong.png" class="radika-shock" style="width: 110px; height: auto; margin-bottom: 12px;">
+            <p style="font-size: 16px; font-weight: bold; color: #555; margin: 6px 0; padding: 0 15px; line-height: 1.4;">${targetHint}</p>
+            <div class="modal-buttons">
+                <button id="retry-button" class="action-btn retry-layout" onclick="closeModal()">もういちど 考える</button>
+            </div>
+        `;
 
+        // 震えるアニメーションの自動解除（元のコードのロジックを維持）
         setTimeout(() => {
           cardElement.classList.remove('wrong-anim');
-          if (radikaAvatar) {
-            radikaAvatar.classList.remove('radika-shock');
-          }
         }, 400);
       }
+
+      // 画面中央のポップアップとして表示
+      resultBox.style.display = 'flex';
+    }
+
+    // 🚀 不正解ダイアログを一瞬で閉じるための新しい関数（checkAnswerの下に追記してください）
+    function closeModal() {
+      document.getElementById('result-box').style.display = 'none';
     }
 
     function nextQuestion() {      
