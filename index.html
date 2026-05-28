@@ -975,6 +975,12 @@ h1 {
         
         if (radikaAvatar) radikaAvatar.src = 'radika.png';
       } else {
+        // 🚀 【大改善】全問クリア画面が出る瞬間に、手前で邪魔をしていた正解ダイアログを強制的に消し去る！
+        const resultBox = document.getElementById('result-box');
+        if (resultBox) {
+          resultBox.style.display = 'none';
+        }
+
         const clearModal = document.getElementById('clear-modal');
         if (clearModal) {
           clearModal.style.display = 'flex';
@@ -994,6 +1000,7 @@ h1 {
         startStarShower();
       }
     }
+
 
     let starInterval; 
     function startStarShower() {
@@ -1051,16 +1058,26 @@ h1 {
         radikaAvatar.className = 'radika-standalone-img'; // 通常のふわふわアニメーションに戻す
       }
 
-      // 5. 💡【重要】クイズ画面を隠して、最初の「スタート画面」をもう一度表示する
-      document.getElementById('quiz-screen').classList.add('hidden');
-      document.getElementById('start-screen').classList.remove('hidden');
+      // 5. 💡【新UI安全装置】クイズ画面を完全に隠して、最初の「スタート画面」を一瞬で表示する
+      const quizScreen = document.getElementById('quiz-screen');
+      const startScreen = document.getElementById('start-screen');
       
-      // 6. 💡【重要】レベル別の背景色を一度リセットして元の淡いオレンジに戻す
+      if (quizScreen && startScreen) {
+        // classListとstyle.displayの両方に対応させ、100%確実に画面を切り替えます
+        quizScreen.classList.add('hidden');
+        quizScreen.style.display = 'none';
+        
+        startScreen.classList.remove('hidden');
+        startScreen.style.display = 'flex'; // または 'block' (スタート画面のCSSに合わせる)
+      }
+      
+      // 6. レベル別の背景色を一度リセットして元の淡いオレンジに戻す
       document.body.classList.remove('bg-level2', 'bg-level3');
 
       // 7. 最新のデータ状態を読み込み直して、次のプレイの選択を待つ
       initApp();
     }
+
 
 
     function triggerSlideAnimation() {
