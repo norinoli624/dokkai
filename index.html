@@ -176,26 +176,51 @@ h1 {
   text-align: left;
 }
 
+/* ===================================================
+   画像コンテナの修正：PC大画面でも巨大化させず、40%以内にロック
+   =================================================== */
 /* 16:9正解画像専用の中央配置コンテナ */
 .main-image-container {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  flex-grow: 1;         /* 画面内の余った縦幅をこの画像エリアに最大割り当て */
-  max-height: 44vh;     /* 画像の縦潰れを防ぐ限界値 */
+  flex-grow: 1;
+  /* 🚀 縦幅の上限を「40vh（画面の40%）」に制限し、PCでの巨大化を完全に防ぎます */
+  height: 40vh !important;
+  max-height: 40vh !important;
   margin: 0 auto 10px auto;
 }
 
 .main-image-container img {
   max-width: 100%;
   max-height: 100%;
-  object-fit: contain;  /* 16:9の比率を絶対に歪ませない */
+  object-fit: contain; /* 16:9を維持 */
   border: 4px solid #ffcc80;
   border-radius: 20px;
   box-shadow: 0 6px 0 #ffe0b2;
   background-color: #fff;
   display: block;
+}
+
+/* ===================================================
+   マスコット「ラジカくん」のコンテナ位置調整
+   =================================================== */
+/* 💡 現在中央に浮いているラジカくんのコンテナのCSS（#result-boxなど）を見つけて
+   以下のように「画面の右下（または左下）」に固定する配置に書き換えます */
+#result-box, .mascot-container {
+  position: fixed !important;
+  bottom: 20px !important;  /* 画面の一番下から20px浮かす */
+  right: 20px !important;   /* 画面の右端から20pxに固定（選択肢に被らない安全地帯） */
+  left: auto !important;    /* 中央寄せの設定を解除 */
+  transform: none !important;
+  z-index: 9999;            /* 一番手前に表示 */
+}
+
+/* ラジカくんのイラストサイズ自体も、邪魔にならない適切な大きさに固定 */
+#result-box img, .mascot-container img {
+  width: 100px !important;  /* ほどよいサイズに調整 */
+  height: auto !important;
 }
 
 /* 3枚の文章選択肢カードを並べるエリア（画面いっぱいに3列等倍） */
