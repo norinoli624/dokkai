@@ -467,66 +467,42 @@ h1 {
 }
 
 
-/* ==========================================
-   4. キャラクター「ラジカくん」の設定
-   ========================================== */
-/* ラジカくんの画像だけを中央に配置する外枠 */
-.radika-standalone-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin: 20px auto;
-  padding: 10px;
-  box-sizing: border-box;
-}
+/* ===================================================
+   4. キャラクター「ラジカくん」の設定（新UI・被り絶対撲滅版）
+   =================================================== */
 
-/* ラジカくんの画像（吹き出し廃止の単体版スタイル） */
-#radika-avatar, .radika-standalone-img {
-  width: 140px;          
-  height: auto;
-  object-fit: contain;  /* 画像が見切れるのを完全に防ぐ */
-  transition: transform 0.2s;
-  /* ほんのり上下に揺らして生きている感を出すアニメーション */
-  animation: radika-gentle-float 2s ease-in-out infinite alternate;
-}
-
-@keyframes radika-gentle-float {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-8px); } /* 少しだけ上に浮かぶ */
-}
-
-/* ※吹き出しの旧仕様パーツ（互換性のために維持） */
-.radika-container {
-  text-align: center;
-  margin: 15px auto;
-}
-.radika-talk-box {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  max-width: 500px;
-  margin: 20px auto;
-  padding: 10px;
-}
+/* 🚀 1. 問題を解いている最中（初期状態）は、画面からラジカくんを完全に消し去ります */
+.radika-standalone-container,
+.radika-container,
+.radika-talk-box,
+#radika-avatar,
+.radika-standalone-img,
 .radika-img {
-  width: 90px;
-  height: auto;
-  animation: gentle-float 2s ease-in-out infinite alternate;
+  display: none !important;
 }
-@keyframes gentle-float {
+
+/* 🚀 2. ただし【中央ポップアップ（#result-box）の中】にあるラジカくんだけは、
+      答えを押した時に美しく表示されるようにロックを解除し、優しく揺らします */
+#result-box #radika-avatar {
+  display: block !important;
+  width: 120px !important;   /* 子どもに見やすい程よいサイズ */
+  height: auto !important;
+  margin: 0 auto 12px auto !important; /* 中央寄せ＆下の隙間 */
+  object-fit: contain;
+  animation: radika-popup-float 2s ease-in-out infinite alternate !important;
+}
+
+/* ポップアップ内限定の優しい浮遊アニメーション */
+@keyframes radika-popup-float {
   0% { transform: translateY(0); }
   100% { transform: translateY(-6px); }
 }
+
+/* 💡 古い吹き出しパーツは使用しないためすべて非表示 */
 .speech-bubble {
-  position: relative;
-  background: #ffffff;
-  border: 4px solid #ffcc80;
-  border-radius: 20px;
-  padding: 12px 20px;
-  box-shadow: 0 6px 0 #ffe0b2;
-  flex: 1;
+  display: none !important;
 }
+
 .speech-bubble::before {
   content: "";
   position: absolute;
@@ -554,7 +530,6 @@ h1 {
   font-weight: bold;
   line-height: 1.5;
 }
-
 
 /* ==========================================
    5. クリアモーダル（ポップアップ）と星のエフェクト
