@@ -720,15 +720,18 @@ h1 {
       } // '1' の場合はクラスがつかないので標準の淡いオレンジ
 
       // 3. 全データ（allQuizData）から、選んだレベルの問題だけを抽出（フィルター）
-      // 💡 安全設計：既存のデータに level キーが無い場合は、自動的に「1（小学1〜2年生）」とみなします
+      // 🚀 【大改善】「idが21以上」という条件を追加し、不具合のある問1〜20を100%自動で除外します！
       let levelFilteredQuestions = allQuizData.filter(quiz => {
         const lvl = quiz.level || '1'; 
-        return lvl === selectedLevel;
+        const quizId = quiz.id; // 問題の番号（id）を取得
+        
+        // 【学年レベルが一致】かつ【問題番号が21以上】のものだけを合格にする
+        return lvl === selectedLevel && quizId >= 21;
       });
 
       // 万が一、選択されたレベルの問題が1問もない場合のガード処理
       if (levelFilteredQuestions.length === 0) {
-        alert('まだこのレベルの問題が登録されていないよ！かんり画面から追加してね。');
+        alert('まだこのレベルの問題が登録されていないよ！これからどんどん追加しよう！');
         return;
       }
 
