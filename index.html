@@ -7,25 +7,27 @@
 
  <style>
 /* ===================================================
-   1. アプリ全体のベース設定（色連動完全対応版）
+   1. アプリ全体のベース設定（色変わりバグ完全修正版）
    =================================================== */
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #FFF3E0 !important; /* 🚀 1〜2年生 ＆ スタート画面の淡いオレンジ */
-  transition: background-color 0.5s ease !important; /* 🚀 ふわっと色が変わるアニメーション */
+  /* 💡 解決のポイント：デフォルト色からは !important を外します */
+  background-color: #FFF3E0; 
+  /* 🚀 ふわっと色が変わるアニメーションを完全に有効化 */
+  transition: background-color 0.5s ease !important; 
   font-family: 'Helvetica Neue', Arial, sans-serif;
   text-align: center;
 }
 
-/* 🚀 レベル別の背景色クラス（bodyに付与された瞬間に色を最優先で上書きする設定） */
+/* 🚀 レベル別の背景色クラス：bodyにクラスがついた時だけ !important で最優先上書きします */
 body.bg-level2 {
   background-color: #E8F5E9 !important; /* 3〜4年生：淡い黄緑 */
 }
 
 body.bg-level3 {
-  background-color: #E3F2FD !important; /* 5〜6年生：淡い水色 */
+  background-color: #E3F2FD !important; /* 5〜6年生：淡い水色（青） */
 }
 
 /* 💡 画面の非表示設定（!important の優先度を最優先にして確実に隠す） */
