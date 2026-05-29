@@ -741,23 +741,24 @@ h1 {
         return;
       }
 
-      // 4. 💡【重要】選ばれたレベルの問題だけでシャッフルを行い、指定の問数（5問）を抜き出す
+      // 4. 💡【重要】選ばれたレベルの問題だけでシャッフルを行い、指定の問数を抜き出す
       for (let i = levelFilteredQuestions.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [levelFilteredQuestions[i], levelFilteredQuestions[j]] = [levelFilteredQuestions[j], levelFilteredQuestions[i]];
-      }
-      
-      // ゲームで使用する問題配列に、切り出した問題をセット
-      const limit = Math.min(QUESTIONS_PER_GAME, levelFilteredQuestions.length);
-      currentPlayQuestions = levelFilteredQuestions.slice(0, limit);
+            const j = Math.floor(Math.random() * (i + 1));
+            [levelFilteredQuestions[i], levelFilteredQuestions[j]] = [levelFilteredQuestions[j], levelFilteredQuestions[i]];
+        }
+        
+        // 🚀【大改善】登録されている問題数（最大5問）に自動でぴったり合わせるセーフティ
+        // まだ問題数が少ないときは、その登録数（1問や2問など）をそのまま最大数にセットします
+        const limit = Math.min(5, levelFilteredQuestions.length);
+        currentPlayQuestions = levelFilteredQuestions.slice(0, limit);
 
-      // 5. 画面を切り替える
-      document.getElementById('start-screen').classList.add('hidden');
-      document.getElementById('quiz-screen').classList.remove('hidden');
+        // 5. 画面を切り替える
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
 
-      // 6. クイズの初期化（1問目を読み込んで表示する）
-      currentQuestionIndex = 0;
-      loadQuestion(); // 💡既存の読み込み関数（loadQuestion）を呼び出してスタート！
+        // 6. クイズの初期化（1問目を読み込んで表示する）
+        currentQuestionIndex = 0;
+        loadQuestion(); // 💡既存の読み込み関数（loadQuestion）を呼び出してスタート！
     }
 
     async function initApp() {
