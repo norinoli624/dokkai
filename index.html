@@ -711,15 +711,16 @@ h1 {
 
     // レベルを選択してクイズを開始する関数
     function startQuiz(selectedLevel) {
-      // 1. ボディの背景色クラスを一度すべてリセット
-      document.body.classList.remove('bg-level2', 'bg-level3');
-  
-      // 2. 選択されたレベルに応じて背景色を切り替える
+      // 1. 🚀【超安全対策】CSSの優先順位を無視し、JSから直接bodyの背景色を優しく切り替える
+      document.body.style.transition = 'background-color 0.5s ease'; // アニメーションを付与
+
       if (selectedLevel === '2') {
-        document.body.classList.add('bg-level2'); // 淡い黄緑
+        document.body.style.setProperty('background-color', '#E8F5E9', 'important'); // 3〜4年生：淡い黄緑
       } else if (selectedLevel === '3') {
-        document.body.classList.add('bg-level3'); // 淡い水色
-      } // '1' の場合はクラスがつかないので標準の淡いオレンジ
+        document.body.style.setProperty('background-color', '#E3F2FD', 'important'); // 5〜6年生：淡い水色
+      } else {
+        document.body.style.setProperty('background-color', '#FFF3E0', 'important'); // 1〜2年生：淡いオレンジ
+      }
 
       // 3. 全データ（allQuizData）から、選んだレベルの問題だけを抽出（フィルター）
       // 🚀 【大改善】「idが21以上」という条件を追加し、不具合のある問1〜20を100%自動で除外します！
@@ -1076,12 +1077,14 @@ h1 {
         startScreen.style.display = 'flex'; // または 'block' (スタート画面のCSSに合わせる)
       }
       
-      // 6. レベル別の背景色を一度リセットして元の淡いオレンジに戻す
+      // 6. 🚀【超安全対策】CSSの優先順位を無視し、ボディの背景色を元の淡いオレンジ（スタート画面の色）へ強制リセット！
+      document.body.style.setProperty('background-color', '#FFF3E0', 'important');
       document.body.classList.remove('bg-level2', 'bg-level3');
 
       // 7. 最新のデータ状態を読み込み直して、次のプレイの選択を待つ
       initApp();
     }
+
 
 
 
