@@ -137,15 +137,18 @@ body.bg-level3 {
 #quiz-screen {
   width: 100vw;
   max-width: 100%;
-  min-height: 100vh;   /* 💡 height: 100vhから「min-height」に変更し、縦に伸びられるようにする */
+  min-height: 100vh;
   margin: 0;
   padding: 10px 24px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  overflow-y: auto;    /* 🚀 重要：文字が溢れた古い問題の時だけ、自動で縦スクロールを許可する */
-  background-color: #f7f9fc;
+  overflow-y: auto;
+  
+  /* 🚀【重要修正】ベタ塗りのグレー(#f7f9fc)を完全に消去して「透明」にします！
+     これでbodyの優しいパステルカラーが画面の最前面まで美しく突き抜けます */
+  background-color: transparent !important;
 }
 
 /* 「だい1もん / ぜん5もん」のバッジ */
