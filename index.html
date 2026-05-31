@@ -214,74 +214,81 @@ h1 {
 
 
 /* ==========================================================
-   ⚙️ 最終解決版：タブレット横向き（ランドスケープ）用・1画面完結パッチ
+   ⚙️ 最終厳格版：タブレット横向き（ランドスケープ）用・1画面完全ロックパッチ
    ========================================================== */
 @media (orientation: landscape) {
-  /* ❶スタート画面のすり抜け・ガタつきを完全消滅 */
-  #quiz-screen.hidden {
-    display: none !important;
-  }
-
-  /* 画面全体を縦に並べるフレックスボックスに固定（スクロールを完全に禁止） */
-  #quiz-screen:not(.hidden) {
-    display: flex !important;
-    flex-direction: column !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
-    justify-content: flex-start !important;
-    align-items: center !important;
-    padding: 6px 16px 12px 16px !important; /* 下部に少し余裕を持たせる */
-    box-sizing: border-box !important;
-    overflow: hidden !important;
-  }
-
-  /* ❶タイトルロゴをコンパクト（横幅160px）に固定して巨大化を防止 */
-  #quiz-screen img[alt="ドッカイズ! ロゴ"] {
+  /* ❶ スタート画面およびクイズ画面のすべてのロゴ画像を「横幅160px」に強制固定し巨大化を根絶 */
+  img[src*="logo"], img[alt*="ロゴ"], #quiz-screen img {
     max-width: 160px !important;
     width: 160px !important;
     height: auto !important;
     margin: 0 auto 2px auto !important;
   }
 
-  /* 進行テキストも省スペース化 */
-  .progress-text {
-    font-size: 13px !important;
-    margin: 0 0 4px 0 !important;
+  /* スタート画面のボタンの並びが崩れないよう微調整 */
+  .button, button, #quiz-screen + div button {
+    padding: 10px 24px !important;
+    margin: 6px auto !important;
+    font-size: 16px !important;
   }
 
-  /* ❷上の問題文：文字切れを100%防ぎ、高さを画面の「32%」にスマートに抑える */
+  /* クイズ画面アクティブ時：アドレスバーを考慮した「100dvh」で画面を完全にロック */
+  #quiz-screen:not(.hidden) {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100dvh !important;      /* ツールバーを除いた実際の画面ぴったりに固定 */
+    max-height: 100dvh !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    padding: 4px 16px 8px 16px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;    /* 画面全体のスクロールを100%禁止 */
+  }
+
+  .progress-text {
+    font-size: 12px !important;
+    margin: 0 0 2px 0 !important;
+  }
+
+  /* ❷ 上の問題文：高さを画面の「25%」に完全ロック。長い文章は枠内だけでスクロールさせ、下を絶対に押し出さない */
   h1 {
-    font-size: 17px !important;
-    line-height: 1.45 !important;
-    padding: 8px 16px !important;
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    padding: 8px 14px !important;
     width: 98% !important;
     max-width: 1000px !important;
-    height: 32vh !important;      /* 高さを32%に指定 */
-    max-height: 32vh !important;
-    margin: 0 auto 6px auto !important;
-    overflow-y: auto !important;   /* 万が一文字が多くても枠内で綺麗にスクロール可能 */
+    height: 25dvh !important;       /* 高さを画面の25%に固定 */
+    max-height: 25dvh !important;
+    margin: 0 auto 4px auto !important;
+    overflow-y: auto !important;    /* 文章が長い場合、この枠内だけでスクロール可能に */
     box-sizing: border-box !important;
+    flex-shrink: 0 !important;
   }
 
-  /* 画像と3択カードを上下に正しく並べるためのコンテナ */
+  /* 画像と3択カードを入れる外枠コンテナ */
   .content-wrapper {
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
     max-width: 1000px !important;
-    flex-grow: 1 !important;      /* 残りの画面の高さを自動で分け合う */
-    justify-content: flex-start !important;
+    height: 62dvh !important;       /* 残りの高さを贅沢に割り振る */
+    max-height: 62dvh !important;
+    justify-content: space-between !important;
     align-items: center !important;
     overflow: hidden !important;
+    flex-shrink: 0 !important;
   }
 
-  /* ❷正解画像エリア：高さを画面の「24%」に制限し、中央に美しく収める */
+  /* ❷ 正解画像エリア：高さを画面の「26%」に縮小制限し、選択肢のためのスペースを死守 */
   .main-image-container {
     position: static !important;
-    width: auto !important;
-    height: 24vh !important;      /* 高さを24%に指定して選択肢のスペースを開ける */
-    max-height: 24vh !important;
-    margin: 0 auto 6px auto !important;
+    width: 100% !important;
+    height: 26dvh !important;       /* 高さを画面の26%に固定 */
+    max-height: 26dvh !important;
+    margin: 0 auto 4px auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
     flex-shrink: 0 !important;
   }
   .main-image-container img {
@@ -289,23 +296,26 @@ h1 {
     height: 100% !important;
     max-height: 100% !important;
     object-fit: contain !important;
+    border: 2px solid #ffcc80 !important;
+    border-radius: 12px !important;
   }
 
-  /* ❷選択肢カード：元の美しい「横3列並び」を完全復活、高さを「30%」にロック */
+  /* ❷ 選択肢カード：元の美しい「横3列並び」を完全復活させ、高さを「32%」に固定 */
   .quiz-container {
     display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important; /* 堂々の3列横並び */
+    grid-template-columns: repeat(3, 1fr) !important; /* 綺麗な横3列並び */
     width: 100% !important;
-    height: 30vh !important;      /* 高さを30%に指定して1画面に収める */
-    max-height: 30vh !important;
+    height: 32dvh !important;       /* 高さを画面の32%に固定 */
+    max-height: 32dvh !important;
     gap: 10px !important;
     margin: 0 auto !important;
     flex-shrink: 0 !important;
+    box-sizing: border-box !important;
   }
 
-  /* 3択カード内の文字が絶対に切れず、スクロールも発生しないジャストサイズ */
+  /* 3択カードの内部レイアウト：文字溢れとスクロールを徹底的に排除 */
   .image-card {
-    padding: 8px 12px !important;
+    padding: 6px 10px !important;
     height: 100% !important;
     box-sizing: border-box !important;
     display: flex !important;
@@ -314,21 +324,21 @@ h1 {
     overflow: hidden !important;
   }
   
-  /* カード内のテキストサイズ：15px〜16px程度に締めて文字溢れを完全に消去 */
+  /* カード内のテキスト：14pxに引き締め、1画面に綺麗に収める */
   .card-text {
-    font-size: 15px !important;
-    line-height: 1.4 !important;
-    overflow-y: auto !important;  /* 万が一のセーフティ（通常はスクロールなしで収まります） */
-    max-height: 80% !important;
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+    overflow-y: auto !important;    /* 万が一のテキスト溢れに対する保険（スクロール可能） */
+    max-height: 85% !important;
   }
 
-  /* せんたくしラベルの微調整 */
+  /* せんたくしラベルの超軽量化 */
   .image-card .label {
-    margin-top: 2px !important;
-    font-size: 11px !important;
+    margin-top: 1px !important;
+    font-size: 10px !important;
     text-align: right !important;
-    border-top: 1px solid #e8e8e8 !important;
-    padding-top: 2px !important;
+    border-top: 1px solid #f0f0f0 !important;
+    padding-top: 1px !important;
   }
 }
 
