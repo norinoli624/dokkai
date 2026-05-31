@@ -214,7 +214,7 @@ h1 {
 
 
 /* ==========================================================
-   ⚡ 空間最大有効活用仕様：タブレット横向き用・完全隔離グリッドパッチ（最終進化版）
+   ⚡ 空間最大有効活用仕様：タブレット横向き用・完全隔離グリッドパッチ（位置ズレ修正版）
    ========================================================== */
 @media (orientation: landscape) {
   
@@ -240,7 +240,7 @@ h1 {
     display: none !important;
   }
 
-  /* 「だい●問」のオレンジ帯：横いっぱいに広がらないよう、左側の「1列目」の中の中に制限 */
+  /* 「だい●問」のオレンジ帯：横いっぱいに広がらないよう、左側の「1列目」の中に制限 */
   #quiz-screen:not(.hidden) .progress-text {
     grid-column: 1 / 2 !important; /* 2列目(画像側)へのはみ出しを禁止 */
     grid-row: 1 / 2 !important;
@@ -273,7 +273,7 @@ h1 {
     display: contents !important;
   }
 
-  /* 正解画像エリア：文章の高さ（自動）に合わせて、右側で綺麗に中央配置されるよう最適化 */
+  /* 💡 正解画像エリア：【修正】左の問題文（h1）と「上端（トップ）」を完全に一致させ、上にずれるのを防ぐ */
   #quiz-screen:not(.hidden) .main-image-container {
     grid-column: 2 / 3 !important;
     grid-row: 2 / 3 !important;
@@ -285,14 +285,13 @@ h1 {
     justify-content: center !important;
     align-items: center !important;
     box-sizing: border-box !important;
-    align-self: stretch !important;
+    align-self: start !important;   /* ★上端をh1のトップとビシッと揃える設定を追加 */
   }
   #quiz-screen:not(.hidden) .main-image-container img {
     width: auto !important;
     height: auto !important;
     max-width: 100% !important;
-    /* 💡【大改善】画像の最大高さを220pxから300pxへ大きくアップ！空きスペースにぴったりフィットさせます */
-    max-height: 300px !important;   
+    max-height: 300px !important;   /* 画像のサイズアップ（300px）を維持 */
     object-fit: contain !important;
     border: 3px solid #ffcc80 !important;
     border-radius: 12px !important;
