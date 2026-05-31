@@ -214,104 +214,121 @@ h1 {
 
 
 /* ==========================================================
-   🛠️ 不具合根絶版：タブレット横向き（ランドスケープ）用最適化パッチ
+   ⚙️ 最終解決版：タブレット横向き（ランドスケープ）用・1画面完結パッチ
    ========================================================== */
 @media (orientation: landscape) {
-  /* ❶スタート画面のすり抜けと、ロゴがスクロールで動くガタつきを完全に根絶 */
+  /* ❶スタート画面のすり抜け・ガタつきを完全消滅 */
   #quiz-screen.hidden {
     display: none !important;
   }
 
-  /* 画面全体の無理な固定を解除し、Android実機で最も滑らかに動く自然な縦スクロールに統一 */
-  #quiz-screen {
+  /* 画面全体を縦に並べるフレックスボックスに固定（スクロールを完全に禁止） */
+  #quiz-screen:not(.hidden) {
     display: flex !important;
     flex-direction: column !important;
-    min-height: 100vh !important;
-    height: auto !important;
-    max-height: none !important;
-    padding: 12px 24px !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    padding: 6px 16px 12px 16px !important; /* 下部に少し余裕を持たせる */
     box-sizing: border-box !important;
-    overflow-y: auto !important; /* 画面全体の自然なスクロールを許可 */
+    overflow: hidden !important;
   }
 
-  /* ロゴ画像のサイズを適正化し、上のバーとの被りを解消 */
+  /* ❶タイトルロゴをコンパクト（横幅160px）に固定して巨大化を防止 */
   #quiz-screen img[alt="ドッカイズ! ロゴ"] {
-    max-width: 220px !important;
-    margin: 0 auto 4px auto !important;
+    max-width: 160px !important;
+    width: 160px !important;
+    height: auto !important;
+    margin: 0 auto 2px auto !important;
   }
 
-  /* ❷問題文の文字切れを100%解消：高さを固定せず、すべての文章を綺麗に露出 */
+  /* 進行テキストも省スペース化 */
+  .progress-text {
+    font-size: 13px !important;
+    margin: 0 0 4px 0 !important;
+  }
+
+  /* ❷上の問題文：文字切れを100%防ぎ、高さを画面の「32%」にスマートに抑える */
   h1 {
-    font-size: 20px !important; /* 子どもが読みやすい大きさをキープ */
-    line-height: 1.5 !important;
-    padding: 12px 20px !important;
-    width: 95% !important;
-    max-width: 960px !important;
-    height: auto !important; /* 文字が切れないよう自動調整 */
-    max-height: none !important;
-    margin: 0 auto 12px auto !important;
-    overflow: visible !important;
+    font-size: 17px !important;
+    line-height: 1.45 !important;
+    padding: 8px 16px !important;
+    width: 98% !important;
+    max-width: 1000px !important;
+    height: 32vh !important;      /* 高さを32%に指定 */
+    max-height: 32vh !important;
+    margin: 0 auto 6px auto !important;
+    overflow-y: auto !important;   /* 万が一文字が多くても枠内で綺麗にスクロール可能 */
+    box-sizing: border-box !important;
   }
 
-  /* 崩れの原因だったabsoluteを廃止し、画像コンテナを正しい位置に戻す */
+  /* 画像と3択カードを上下に正しく並べるためのコンテナ */
   .content-wrapper {
     display: flex !important;
-    flex-direction: column !important; /* 上から順に美しく並べる */
-    align-items: center !important;
+    flex-direction: column !important;
     width: 100% !important;
-    height: auto !important;
-    margin: 0 !important;
+    max-width: 1000px !important;
+    flex-grow: 1 !important;      /* 残りの画面の高さを自動で分け合う */
+    justify-content: flex-start !important;
+    align-items: center !important;
+    overflow: hidden !important;
   }
 
-  /* 正解画像エリア：横長画面でも巨大化せず、中央に見やすく配置 */
+  /* ❷正解画像エリア：高さを画面の「24%」に制限し、中央に美しく収める */
   .main-image-container {
-    position: static !important; /* 絶対配置を解除してバグを根絶 */
-    width: 100% !important;
-    max-width: 500px !important; /* 横画面で大きくなりすぎない最適なサイズ */
-    height: 32vh !important;     /* 縦幅を適度に抑えて選択肢を視野に入れる */
-    max-height: 240px !important;
-    margin: 0 auto 16px auto !important;
+    position: static !important;
+    width: auto !important;
+    height: 24vh !important;      /* 高さを24%に指定して選択肢のスペースを開ける */
+    max-height: 24vh !important;
+    margin: 0 auto 6px auto !important;
+    flex-shrink: 0 !important;
   }
   .main-image-container img {
-    width: 100% !important;
+    width: auto !important;
     height: 100% !important;
+    max-height: 100% !important;
     object-fit: contain !important;
   }
 
-  /* 選択肢カード：元の美しい「横3列並び」を完璧に復活 */
+  /* ❷選択肢カード：元の美しい「横3列並び」を完全復活、高さを「30%」にロック */
   .quiz-container {
     display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important; /* 綺麗な3列横並び */
+    grid-template-columns: repeat(3, 1fr) !important; /* 堂々の3列横並び */
     width: 100% !important;
-    max-width: 1100px !important;
-    height: auto !important;
-    gap: 16px !important;
-    margin: 0 auto 20px auto !important;
+    height: 30vh !important;      /* 高さを30%に指定して1画面に収める */
+    max-height: 30vh !important;
+    gap: 10px !important;
+    margin: 0 auto !important;
+    flex-shrink: 0 !important;
   }
 
-  /* 3択カード内の個別テキスト調整（スクロールさせず1枚のカードとして全表示） */
+  /* 3択カード内の文字が絶対に切れず、スクロールも発生しないジャストサイズ */
   .image-card {
-    padding: 14px 16px !important;
-    height: auto !important;
-    min-height: 160px !important;
+    padding: 8px 12px !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    box-sizing: border-box !important;
+    overflow: hidden !important;
   }
+  
+  /* カード内のテキストサイズ：15px〜16px程度に締めて文字溢れを完全に消去 */
   .card-text {
-    font-size: 17px !important; /* 読みやすさと収まりのバランスを両立 */
-    line-height: 1.45 !important;
-    overflow: visible !important; /* カード内スクロールを廃止し、一目で読めるように */
+    font-size: 15px !important;
+    line-height: 1.4 !important;
+    overflow-y: auto !important;  /* 万が一のセーフティ（通常はスクロールなしで収まります） */
+    max-height: 80% !important;
   }
 
   /* せんたくしラベルの微調整 */
   .image-card .label {
-    margin-top: 6px !important;
-    font-size: 12px !important;
+    margin-top: 2px !important;
+    font-size: 11px !important;
     text-align: right !important;
-    border-top: 1px solid #e0e0e0 !important;
-    padding-top: 4px !important;
+    border-top: 1px solid #e8e8e8 !important;
+    padding-top: 2px !important;
   }
 }
 
