@@ -214,41 +214,45 @@ h1 {
 
 
 /* ==========================================================
-   ⚡ 空間最大有効活用仕様：タブレット横向き用・完全隔離グリッドパッチ
+   ⚡ 空間最大有効活用仕様：タブレット横向き用・完全隔離グリッドパッチ（最終進化版）
    ========================================================== */
 @media (orientation: landscape) {
   
-  /* 💡 ❶重要：クイズ画面がアクティブ（表示中）の時だけ、この中の全スタイルを適用する */
+  /* クイズ画面がアクティブ（表示中）の時だけ適用 */
   #quiz-screen:not(.hidden) {
     display: grid !important;
     /* 左右の比率を「文章：55%」「画像：45%」に美しく分割 */
     grid-template-columns: 55% 45% !important;
-    /* 縦の比率を「進行テキスト：24px」「上半身（文章・絵）：44dvh」「下半身（3択）：45dvh」で100%使い切る */
-    grid-template-rows: 24px 44dvh 45dvh !important;
-    row-gap: 10px !important;
+    /* 💡高さを固定せず、中身に合わせて自動（auto）で伸縮させることで、文字切れと無駄な空白を同時に撲滅 */
+    grid-template-rows: auto auto auto !important;
+    row-gap: 8px !important;
     column-gap: 16px !important;
-    height: 100dvh !important;
-    max-height: 100dvh !important;
-    padding: 8px 16px 12px 16px !important; /* 下部までしっかりカードを広げる */
+    min-height: 100dvh !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 10px 16px 20px 16px !important;
     box-sizing: border-box !important;
-    overflow: hidden !important; /* 画面全体のスクロールを完全禁止 */
+    overflow-y: auto !important; /* 画面全体で自然に収めるセーフティ */
   }
 
-  /* クイズ画面内のロゴは、横画面のスペース死守のため完全に非表示（スタート画面のロゴには1ミリも干渉しません） */
+  /* クイズ画面内のロゴは非表示を維持 */
   #quiz-screen:not(.hidden) img[alt="ドッカイズ! ロゴ"] {
     display: none !important;
   }
 
-  /* 進行度テキスト：1段目の左端にスマートに配置 */
+  /* 💡❷「だい●問」のオレンジ帯：横いっぱいに広がらないよう、左側の「1列目」の中だけに制限 */
   #quiz-screen:not(.hidden) .progress-text {
-    grid-column: 1 / 3 !important;
+    grid-column: 1 / 2 !important; /* 2列目(画像側)へのはみ出しを禁止 */
     grid-row: 1 / 2 !important;
     font-size: 13px !important;
     margin: 0 !important;
-    text-align: left !important;
+    display: inline-block !important;
+    justify-self: start !important; /* 左端にピタッと寄せる */
+    width: auto !important;         /* 文字の長さにジャストフィットさせる */
+    padding: 4px 12px !important;
   }
 
-  /* 💡 上の問題文：2段目の左側（1列目の2段目）に配置。高さを44dvhまで広げて文字切れを解消 */
+  /* 💡❸上の問題文：高さを「auto（自動）」に変更！文章量が多くても絶対にスクロールさせず、すべて出し切る */
   #quiz-screen:not(.hidden) h1 {
     grid-column: 1 / 2 !important;
     grid-row: 2 / 3 !important;
@@ -257,57 +261,62 @@ h1 {
     padding: 10px 14px !important;
     width: 100% !important;
     max-width: none !important;
-    height: 100% !important;    /* 割り当てられた44dvhをフルに使う */
+    height: auto !important;        /* 縦幅を自動にし、文章を100%露出 */
+    max-height: none !important;
     margin: 0 !important;
     box-sizing: border-box !important;
-    overflow-y: auto !important; /* 万が一、これ以上の超長文が来てもここだけ綺麗にスクロール */
+    overflow: visible !important;   /* 枠内スクロールを完全撤廃 */
   }
 
-  /* 外枠（content-wrapper）を透明化し、中身を直接グリッドに連動させる */
+  /* 外枠（content-wrapper）の透明化を維持 */
   #quiz-screen:not(.hidden) .content-wrapper {
     display: contents !important;
   }
 
-  /* 💡 正解画像エリア：2段目の右側（2列目の2段目）。文章と高さを100%完全に一致させる */
+  /* 💡正解画像エリア：文章の高さ（自動）に合わせて、右側で綺麗に中央配置されるよう最適化 */
   #quiz-screen:not(.hidden) .main-image-container {
     grid-column: 2 / 3 !important;
     grid-row: 2 / 3 !important;
     width: 100% !important;
-    height: 100% !important;    /* 文章と同じ44dvhに揃える */
+    height: 100% !important;        /* 左側の問題文の高さと完全に同期 */
+    min-height: 180px !important;   /* 画像が縮みすぎないための保険 */
     margin: 0 !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     box-sizing: border-box !important;
+    align-self: stretch !important;
   }
   #quiz-screen:not(.hidden) .main-image-container img {
     width: auto !important;
-    height: 100% !important;
+    height: auto !important;
     max-width: 100% !important;
-    object-fit: contain !important; /* 16:9の比率を絶対に崩さない */
+    max-height: 220px !important;   /* 画像の最大高さを抑えて下を圧迫しない */
+    object-fit: contain !important;
     border: 3px solid #ffcc80 !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 0 #ffe0b2 !important;
     margin: 0 !important;
   }
 
-  /* 💡 ❷選択肢カード：下段（3段目）を丸ごと使い、画面下部のデッドスペースを綺麗に埋める */
+  /* 💡❹選択肢カード：下段（3段目）。上半身が自動で縮まった分、上にキュッと引き締まる */
   #quiz-screen:not(.hidden) .quiz-container {
-    grid-column: 1 / 3 !important; /* 横幅いっぱいに広げる */
-    grid-row: 3 / 4 !important;    /* 下半身の45dvhをフルに使って下へ寄せる */
+    grid-column: 1 / 3 !important;
+    grid-row: 3 / 4 !important;
     display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important; /* 綺麗な3列横並び */
+    grid-template-columns: repeat(3, 1fr) !important;
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important;        /* 無理に引き伸ばさず、カードの文字量に合わせる */
     gap: 12px !important;
-    margin: 0 !important;
+    margin: 4px 0 0 0 !important;
     box-sizing: border-box !important;
   }
 
-  /* 3択カードの内部レイアウト（スクロールは一切発生しません） */
+  /* 💡❹3択カードの内部：縦に間延びしていたデッドスペースを完全に消去 */
   #quiz-screen:not(.hidden) .image-card {
     padding: 10px 14px !important;
-    height: 100% !important;
+    height: auto !important;        /* 無駄な高さをカットして中身にフィット */
+    min-height: 110px !important;   /* 最低限の押しやすさは死守 */
     box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
@@ -315,16 +324,17 @@ h1 {
     overflow: hidden !important;
   }
   
-  /* カード内の文章：文字サイズ15pxで広々と全表示 */
+  /* カード内の文章：15pxで見やすく全表示 */
   #quiz-screen:not(.hidden) .card-text {
     font-size: 15px !important;
     line-height: 1.4 !important;
     overflow: hidden !important;
+    margin-bottom: 4px !important;
   }
 
   /* せんたくしラベルの微調整 */
   #quiz-screen:not(.hidden) .image-card .label {
-    margin-top: 4px !important;
+    margin-top: 2px !important;
     font-size: 11px !important;
     text-align: right !important;
     border-top: 1px solid #f0f0f0 !important;
