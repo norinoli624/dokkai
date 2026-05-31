@@ -214,73 +214,83 @@ h1 {
 
 
 /* ==========================================================
-   ★ここから追記：タブレット横向き（ランドスケープ）用の最適化パッチ
+   🛠️ バグ修正版：タブレット横向き（ランドスケープ）用の最適化パッチ
    ========================================================== */
 @media (orientation: landscape) {
-  /* 画面全体の縦スクロールを発生させず、1画面にロックする */
+  /* スタート画面（#quiz-screenにhiddenクラスがある時）は、外枠を絶対に表示させない */
+  #quiz-screen.hidden .content-wrapper {
+    display: none !important;
+  }
+
+  /* 画面全体の固定を解除し、選択肢が多い場合は安全にスクロールできるように変更 */
   #quiz-screen {
     display: flex !important;
     flex-direction: column !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
+    min-height: 100vh !important;
+    height: auto !important;
+    max-height: none !important;
     justify-content: flex-start !important;
     padding: 10px 24px !important;
     box-sizing: border-box !important;
-    overflow: hidden !important;
+    overflow-y: auto !important; /* スクロールを100%許可 */
   }
 
-  /* ロゴ画像を少し小さくしてスペースを確保 */
+  /* ロゴ画像をコンパクトにして上部スペースを確保 */
   #quiz-screen img[alt="ドッカイズ! ロゴ"] {
-    max-width: 180px !important;
+    max-width: 160px !important;
+    margin-bottom: 2px !important;
   }
 
-  /* 上部の問題文：横向きの時は文字サイズを少し締めて、高さを抑える */
+  /* 上部の問題文：高さを抑えつつ視認性をキープ */
   h1 {
     font-size: 18px !important;
     padding: 8px 16px !important;
-    margin: 0 auto 8px auto !important;
+    margin: 0 auto 12px auto !important;
   }
 
-  /* HTML側で追加した囲み枠：ここを横並び(左右2カラム)に切り替える */
+  /* 左右2カラムにするための外枠設定 */
   .content-wrapper {
     display: flex !important;
     flex-direction: row !important;
     justify-content: space-between !important;
-    align-items: center !important;
-    gap: 24px !important;
+    align-items: flex-start !important; /* 上揃えにしてスクロール時の崩れを防止 */
+    gap: 20px !important;
     width: 100% !important;
-    flex-grow: 1 !important;
-    overflow: hidden !important;
+    margin-bottom: 20px !important;
   }
 
-  /* 左側の画像エリア：横幅を42%に抑え、縦を画面中央に美しくフィット */
+  /* 左側の画像エリア：横幅を40%に抑え、画面内で綺麗にフィット */
   .main-image-container {
-    width: 42% !important;
-    height: 52vh !important;
-    max-height: 52vh !important;
+    width: 40% !important;
+    height: 45vh !important;
+    max-height: 45vh !important;
     margin: 0 !important;
+    position: sticky !important; /* スクロールしても絵が画面内に残りやすいようにピン留め */
+    top: 10px !important;
     flex-shrink: 0 !important;
   }
 
-  /* 右側の3択カードエリア：横並びから「縦3つ並び」に劇的チェンジ */
+  /* 右側の3択カードエリア：高さを自動にして、隠れず100%露出させる */
   .quiz-container {
-    width: 55% !important;
+    width: 58% !important;
     grid-template-columns: 1fr !important; /* 縦に1列（3段）にする */
-    height: 52vh !important;
-    gap: 10px !important;
+    height: auto !important;
+    max-height: none !important;
+    gap: 12px !important;
     margin: 0 !important;
   }
 
   /* 縦並びになった3択カード内のレイアウト微調整 */
   .image-card {
-    padding: 8px 16px !important;
-    height: 100% !important;
+    padding: 12px 16px !important;
+    height: auto !important;
+    min-height: 100px !important;
   }
 
-  /* カード下部のラベル「せんたくし1」を右側に寄せて文章の邪魔をしない */
+  /* カード下部のラベル「せんたくし1」を右寄せにして文章エリアを広げる */
   .image-card .label {
-    margin-top: 2px !important;
-    font-size: 14px !important;
+    margin-top: 4px !important;
+    font-size: 13px !important;
     text-align: right !important;
     border-top: none !important;
   }
@@ -742,22 +752,21 @@ h1 {
     </div>
   </div>
 
-  <!-- クイズ画面（初期状態は hidden で隠しておく） -->
-  <div id="quiz-screen" class="hidden">
+  <!-- クイズ画面(初期状態は hidden で隠しておく) -->
+<div id="quiz-screen" class="hidden">
     <div style="margin-top: 10px; margin-bottom: 10px;">
-      <img src="logo.png" alt="ドッカイズ！ロゴ" style="max-width: 300px; width: 100%; height: auto;">
+        <img src="logo.png" alt="ドッカイズ! ロゴ" style="max-width: 300px; width: 100%; height: auto;">
     </div>
-    <div id="progress" class="progress-text">データをよみこみ中...</div>
-    <h1 id="question-text">読み込み中...</h1>
+    <div id="progress" class="progress-text">データをよみこみ中... </div>
+    <h1 id="question-text">読み込み中... </h1>
 
-    <!-- ★ここを追加（画像と3択を横に並べるための外枠） -->
+    <!-- ★ここに content-wrapper を移動（問題文の下から囲むことで、スタート画面での露出を100%防ぎます） -->
     <div class="content-wrapper">
-        <!-- ※JavaScriptによって、ここに「.main-image-container」が自動挿入されます -->
+        <!-- ※JavaScriptによって、ここに「.main-image-container」と「#quiz-container」が自動挿入されます -->
         <div id="quiz-container" class="quiz-container"></div>
-    <!-- ★ここを追加（外枠の閉じタグ） -->
     </div>
 
-    <!-- 🚀 大改善：ボタンをすべて内包した中央ポップアップエリア -->
+    <!--大改善: ボタンをすべて内包した中央ポップアップエリア -->
     <div id="result-box" class="result-message" style="display: none;">
         <!-- ラジカくんのイラストやメッセージがここに入ります -->
         <div id="result-content"></div>
