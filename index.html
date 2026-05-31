@@ -211,6 +211,83 @@ h1 {
   display: block;
 }
 
+
+
+/* ==========================================================
+   ★ここから追記：タブレット横向き（ランドスケープ）用の最適化パッチ
+   ========================================================== */
+@media (orientation: landscape) {
+  /* 画面全体の縦スクロールを発生させず、1画面にロックする */
+  #quiz-screen {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    justify-content: flex-start !important;
+    padding: 10px 24px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  /* ロゴ画像を少し小さくしてスペースを確保 */
+  #quiz-screen img[alt="ドッカイズ! ロゴ"] {
+    max-width: 180px !important;
+  }
+
+  /* 上部の問題文：横向きの時は文字サイズを少し締めて、高さを抑える */
+  h1 {
+    font-size: 18px !important;
+    padding: 8px 16px !important;
+    margin: 0 auto 8px auto !important;
+  }
+
+  /* HTML側で追加した囲み枠：ここを横並び(左右2カラム)に切り替える */
+  .content-wrapper {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 24px !important;
+    width: 100% !important;
+    flex-grow: 1 !important;
+    overflow: hidden !important;
+  }
+
+  /* 左側の画像エリア：横幅を42%に抑え、縦を画面中央に美しくフィット */
+  .main-image-container {
+    width: 42% !important;
+    height: 52vh !important;
+    max-height: 52vh !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* 右側の3択カードエリア：横並びから「縦3つ並び」に劇的チェンジ */
+  .quiz-container {
+    width: 55% !important;
+    grid-template-columns: 1fr !important; /* 縦に1列（3段）にする */
+    height: 52vh !important;
+    gap: 10px !important;
+    margin: 0 !important;
+  }
+
+  /* 縦並びになった3択カード内のレイアウト微調整 */
+  .image-card {
+    padding: 8px 16px !important;
+    height: 100% !important;
+  }
+
+  /* カード下部のラベル「せんたくし1」を右側に寄せて文章の邪魔をしない */
+  .image-card .label {
+    margin-top: 2px !important;
+    font-size: 14px !important;
+    text-align: right !important;
+    border-top: none !important;
+  }
+}
+
+
+
 /* ===================================================
    ② ラジカくん（#result-box）の修正：
    選択肢に絶対に被らない「画面中央の特大ポップアップ（モーダル）」仕様
@@ -670,12 +747,15 @@ h1 {
     <div style="margin-top: 10px; margin-bottom: 10px;">
       <img src="logo.png" alt="ドッカイズ！ロゴ" style="max-width: 300px; width: 100%; height: auto;">
     </div>
-
     <div id="progress" class="progress-text">データをよみこみ中...</div>
-
     <h1 id="question-text">読み込み中...</h1>
 
-    <div id="quiz-container" class="quiz-container"></div>
+    <!-- ★ここを追加（画像と3択を横に並べるための外枠） -->
+    <div class="content-wrapper">
+        <!-- ※JavaScriptによって、ここに「.main-image-container」が自動挿入されます -->
+        <div id="quiz-container" class="quiz-container"></div>
+    <!-- ★ここを追加（外枠の閉じタグ） -->
+    </div>
 
     <!-- 🚀 大改善：ボタンをすべて内包した中央ポップアップエリア -->
     <div id="result-box" class="result-message" style="display: none;">
