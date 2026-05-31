@@ -214,15 +214,16 @@ h1 {
 
 
 /* ==========================================================
-   ⚡ 空間最大有効活用仕様：タブレット横向き用・画像位置絶対座標固定パッチ
+   ⚡ 空間最大有効活用仕様：タブレット横向き用・完全隔離グリッドパッチ（安定動作リセット版）
    ========================================================== */
 @media (orientation: landscape) {
   
   /* クイズ画面がアクティブ（表示中）の時だけ適用 */
   #quiz-screen:not(.hidden) {
     display: grid !important;
-    /* 💡右側45%のスペースを画像の「絶対配置エリア」として確保。左側53%に文章を配置 */
-    grid-template-columns: 53% 47% !important;
+    /* 左右の比率を「文章：55%」「画像：45%」に美しく分割 */
+    grid-template-columns: 55% 45% !important;
+    /* 高さを完全に自動（auto）にすることで、長文問題でも文字をすべて露出させスクロールを消去 */
     grid-template-rows: auto auto auto !important;
     row-gap: 8px !important;
     column-gap: 16px !important;
@@ -232,7 +233,6 @@ h1 {
     padding: 10px 16px 20px 16px !important;
     box-sizing: border-box !important;
     overflow-y: auto !important; /* 画面全体で自然に収めるセーフティ */
-    position: relative !important; /* ★絶対座標(absolute)の基準線にする */
   }
 
   /* クイズ画面内のロゴは非表示を維持 */
@@ -247,12 +247,12 @@ h1 {
     font-size: 13px !important;
     margin: 0 !important;
     display: inline-block !important;
-    justify-self: start !important; 
+    justify-self: start !important; /* 左端に綺麗に寄せる正しいCSSプロパティ */
     width: auto !important;
     padding: 4px 12px !important;
   }
 
-  /* 上の問題文：高さを自動（auto）にし、枠内スクロールを100%排除。文字をすべて出し切る */
+  /* 上の問題文：高さを「auto（自動）」にし、枠内スクロールを完全に消滅させます */
   #quiz-screen:not(.hidden) h1 {
     grid-column: 1 / 2 !important;
     grid-row: 2 / 3 !important;
@@ -261,7 +261,7 @@ h1 {
     padding: 10px 14px !important;
     width: 100% !important;
     max-width: none !important;
-    height: auto !important;
+    height: auto !important;        /* 文字をすべて出し切るためautoに */
     max-height: none !important;
     margin: 0 !important;
     box-sizing: border-box !important;
@@ -273,26 +273,25 @@ h1 {
     display: contents !important;
   }
 
-  /* 💡正解画像エリア：【究極の修正】グリッドから完全に切り離し、絶対座標で「画面の右上」に完全固定！ */
+  /* 正解画像エリア：文章の高さ（自動）に合わせて、右側で綺麗に並ぶ自動伸縮構造 */
   #quiz-screen:not(.hidden) .main-image-container {
-    position: absolute !important;  /* ★絶対座標配置へ変更 */
-    top: 48px !important;           /* ★画面の上から48pxの位置にがっちり固定（オレンジ帯の下に揃う） */
-    right: 16px !important;         /* ★画面の右端から16pxの位置にがっちり固定 */
-    width: 44% !important;          /* ★横幅を44%に完全固定 */
-    height: 300px !important;       /* ★子どもたちが見やすい300pxのサイズを完全維持 */
-    max-height: 300px !important;
+    grid-column: 2 / 3 !important;
+    grid-row: 2 / 3 !important;
+    width: 100% !important;
+    height: 100% !important;        /* 左側の問題文の高さと同期 */
+    min-height: 180px !important;   /* 画像が縮みすぎないための保険 */
     margin: 0 !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     box-sizing: border-box !important;
-    z-index: 100 !important;        /* 前面に出して崩れを防止 */
+    align-self: start !important;   /* 上端を問題文のトップとビシッと揃える */
   }
   #quiz-screen:not(.hidden) .main-image-container img {
     width: auto !important;
-    height: 300px !important;       /* 画像自体の高さも300pxで完全固定 */
-    max-height: 300px !important;   
+    height: auto !important;
     max-width: 100% !important;
+    max-height: 300px !important;   /* 子どもたちが見やすい大きな300pxサイズ */
     object-fit: contain !important;
     border: 3px solid #ffcc80 !important;
     border-radius: 12px !important;
@@ -309,16 +308,15 @@ h1 {
     width: 100% !important;
     height: auto !important;        /* カードの文字量にジャストフィット */
     gap: 12px !important;
-    /* 💡画像（300px）が絶対に選択肢に被らないよう、上部に安全なマージン（320px）を確保。どんな長文でも画像の下から選択肢が始まります */
-    margin-top: 320px !important;  
+    margin: 4px 0 0 0 !important;
     box-sizing: border-box !important;
   }
 
   /* 3択カードの内部レイアウト */
   #quiz-screen:not(.hidden) .image-card {
     padding: 10px 14px !important;
-    height: auto !important;
-    min-height: 110px !important;
+    height: auto !important;        /* 無駄な高さをカットして中身にフィット */
+    min-height: 110px !important;   /* 最低限の押しやすさは死守 */
     box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
