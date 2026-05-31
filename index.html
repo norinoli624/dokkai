@@ -214,7 +214,7 @@ h1 {
 
 
 /* ==========================================================
-   ⚡ 空間最大有効活用仕様：タブレット横向き用・完全隔離グリッドパッチ（安定動作リセット版）
+   ⚡ 空間最大有効活用仕様：タブレット横向き用・完全隔離グリッドパッチ（画像ちょい下げ版）
    ========================================================== */
 @media (orientation: landscape) {
   
@@ -247,7 +247,7 @@ h1 {
     font-size: 13px !important;
     margin: 0 !important;
     display: inline-block !important;
-    justify-self: start !important; /* 左端に綺麗に寄せる正しいCSSプロパティ */
+    justify-self: start !important; 
     width: auto !important;
     padding: 4px 12px !important;
   }
@@ -273,25 +273,26 @@ h1 {
     display: contents !important;
   }
 
-  /* 正解画像エリア：文章の高さ（自動）に合わせて、右側で綺麗に並ぶ自動伸縮構造 */
+  /* 正解画像エリア：文章の高さに合わせて、右側で綺麗に並ぶ自動伸縮構造 */
   #quiz-screen:not(.hidden) .main-image-container {
     grid-column: 2 / 3 !important;
     grid-row: 2 / 3 !important;
     width: 100% !important;
     height: 100% !important;        /* 左側の問題文の高さと同期 */
     min-height: 180px !important;   /* 画像が縮みすぎないための保険 */
-    margin: 0 !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     box-sizing: border-box !important;
-    align-self: start !important;   /* 上端を問題文のトップとビシッと揃える */
+    align-self: start !important;   /* 上端を基準線にする */
+    /* 💡【大改善】大きさを変えずに、位置だけを下に「15px」すっと下げる魔法の余白 */
+    margin: 15px 0 0 0 !important;  
   }
   #quiz-screen:not(.hidden) .main-image-container img {
     width: auto !important;
     height: auto !important;
     max-width: 100% !important;
-    max-height: 300px !important;   /* 子どもたちが見やすい大きな300pxサイズ */
+    max-height: 300px !important;   /* 子どもたちが見やすい大きな300pxサイズを維持 */
     object-fit: contain !important;
     border: 3px solid #ffcc80 !important;
     border-radius: 12px !important;
