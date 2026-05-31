@@ -214,7 +214,7 @@ h1 {
 
 
 /* ==========================================================
-   ⚡ 空間最大有効活用仕様：タブレット横向き用・完全隔離グリッドパッチ（画像固定版）
+   ⚡ 空間最大有効活用仕様：タブレット横向き用・完全不動＆スクロールゼロパッチ
    ========================================================== */
 @media (orientation: landscape) {
   
@@ -223,15 +223,16 @@ h1 {
     display: grid !important;
     /* 左右の比率を「文章：55%」「画像：45%」に美しく分割 */
     grid-template-columns: 55% 45% !important;
-    /* 💡【大改善】2段目（上半身）の高さを「42dvh」に厳格に一律固定！これで問題文の長さに画像が引っ張られなくなります */
-    grid-template-rows: auto 42dvh auto !important;
+    /* 💡高さを完全に自動（auto）へ戻し、文章が長くてもすべて100%露出させてスクロールを消去 */
+    grid-template-rows: auto auto auto !important;
     row-gap: 8px !important;
     column-gap: 16px !important;
-    height: 100dvh !important;
-    max-height: 100dvh !important;
+    min-height: 100dvh !important;
+    height: auto !important;
+    max-height: none !important;
     padding: 10px 16px 20px 16px !important;
     box-sizing: border-box !important;
-    overflow: hidden !important; /* 画面全体のスクロールを100%禁止 */
+    overflow-y: auto !important; /* 画面全体で自然に収めるセーフティ */
   }
 
   /* クイズ画面内のロゴは非表示を維持 */
@@ -251,7 +252,7 @@ h1 {
     padding: 4px 12px !important;
   }
 
-  /* 💡上の問題文：高さを上半身エリアいっぱいの「100%」にロック。長い文章は枠内だけで綺麗に自動収縮 */
+  /* 💡上の問題文：高さを「auto（自動）」に戻す！枠内スクロールを地球上から完全に消滅させます */
   #quiz-screen:not(.hidden) h1 {
     grid-column: 1 / 2 !important;
     grid-row: 2 / 3 !important;
@@ -260,10 +261,11 @@ h1 {
     padding: 10px 14px !important;
     width: 100% !important;
     max-width: none !important;
-    height: 100% !important;        /* 割り当てられた42dvhをフルに使う */
+    height: auto !important;        /* 文字をすべて出し切るためautoに */
+    max-height: none !important;
     margin: 0 !important;
     box-sizing: border-box !important;
-    overflow-y: auto !important;   /* 文章が長い時、ここだけ自動で枠内スクロール（下を絶対押し出さない） */
+    overflow: visible !important;   /* 枠内スクロールを完全撤廃 */
   }
 
   /* 外枠（content-wrapper）の透明化を維持 */
@@ -271,24 +273,26 @@ h1 {
     display: contents !important;
   }
 
-  /* 💡正解画像エリア：高さを100%（42dvh）にがっちり固定。問題文の長さに一切影響されません */
+  /* 💡正解画像エリア：【大修正】高さをパーセンテージではなく「230px」の絶対値で固定！ */
   #quiz-screen:not(.hidden) .main-image-container {
     grid-column: 2 / 3 !important;
     grid-row: 2 / 3 !important;
     width: 100% !important;
-    height: 100% !important;        /* 高さを42dvhに一律完全固定 */
+    height: 230px !important;       /* ★縦幅を「230px」にがっちり固定値ロック */
+    max-height: 230px !important;
     margin: 0 !important;
     display: flex !important;
     justify-content: center !important;
-    align-items: center !important; /* 画像を常に枠のど真ん中に固定 */
+    align-items: center !important;
     box-sizing: border-box !important;
-    align-self: center !important;
+    align-self: start !important;   /* ★上端を問題文のトップとミリ単位でビシッと揃えて固定 */
   }
   #quiz-screen:not(.hidden) .main-image-container img {
     width: auto !important;
-    height: auto !important;
+    /* 💡木枠のサイズ自体が230pxで完全に固定されるため、問題が変わっても画像サイズや位置が1ミリもブレなくなります */
+    height: 230px !important;       
+    max-height: 230px !important;   
     max-width: 100% !important;
-    max-height: 100% !important;   /* 42dvhの木枠の中に最大サイズでピタッと固定 */
     object-fit: contain !important;
     border: 3px solid #ffcc80 !important;
     border-radius: 12px !important;
@@ -305,7 +309,7 @@ h1 {
     width: 100% !important;
     height: auto !important;        /* カードの文字量にジャストフィット */
     gap: 12px !important;
-    margin: 4px 0 0 0 !important;
+    margin: 8px 0 0 0 !important;
     box-sizing: border-box !important;
   }
 
@@ -321,7 +325,7 @@ h1 {
     overflow: hidden !important;
   }
   
-  /* カード内の文章：15pxで見やすく全表示 */
+  /* カード内の文章 */
   #quiz-screen:not(.hidden) .card-text {
     font-size: 15px !important;
     line-height: 1.4 !important;
