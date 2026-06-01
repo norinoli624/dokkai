@@ -951,77 +951,68 @@ h1 {
 
     // レベルを選択してクイズを開始する関数
     function startQuiz(selectedLevel) {
-      // 1. 🚀【超安全対策】CSSの優先順位を無視し、JSから直接bodyの背景色を優しく切り替える
-      document.body.style.transition = 'background-color 0.5s ease'; // アニメーションを付与
+        document.body.style.transition = 'background-color 0.5s ease';
+        if (selectedLevel === '2') {
+            document.body.style.setProperty('background-color', '#E8F5E9', 'important');
+        } else if (selectedLevel === '3') {
+            document.body.style.setProperty('background-color', '#E3F2FD', 'important');
+        } else {
+            document.body.style.setProperty('background-color', '#FFF3E0', 'important');
+        }
 
-      if (selectedLevel === '2') {
-        document.body.style.setProperty('background-color', '#E8F5E9', 'important'); // 3〜4年生：淡い黄緑
-      } else if (selectedLevel === '3') {
-        document.body.style.setProperty('background-color', '#E3F2FD', 'important'); // 5〜6年生：淡い水色
-      } else {
-        document.body.style.setProperty('background-color', '#FFF3E0', 'important'); // 1〜2年生：淡いオレンジ
-      }
+        // 登録問題をフィルター
+        let levelFilteredQuestions = allQuizData.filter(quiz => {
+            const lvl = quiz.level || '1';
+            const quizId = quiz.id;
+            return lvl === selectedLevel && quizId >= 21;
+        });
 
-      // 3. 全データ（allQuizData）から、選んだレベルの問題だけを抽出（フィルター）
-      // 🚀 【大改善】「idが21以上」という条件を追加し、不具合のある問1〜20を100%自動で除外します！
-      let levelFilteredQuestions = allQuizData.filter(quiz => {
-        const lvl = quiz.level || '1'; 
-        const quizId = quiz.id; // 問題の番号（id）を取得
-        
-        // 【学年レベルが一致】かつ【問題番号が21以上】のものだけを合格にする
-        return lvl === selectedLevel && quizId >= 21;
-      });
+        if (levelFilteredQuestions.length === 0) {
+            alert('まだこのレベルの問題が登録されていないよ！これからどんどん追加しよう！');
+            return;
+        }
 
-      // 万が一、選択されたレベルの問題が1問もない場合のガード処理
-      if (levelFilteredQuestions.length === 0) {
-        alert('まだこのレベルの問題が登録されていないよ！これからどんどん追加しよう！');
-        return;
-      }
-
-      // 4. 💡【重要】選ばれたレベルの問題だけでシャッフルを行い、指定の問数を抜き出す
-      for (let i = levelFilteredQuestions.length - 1; i > 0; i--) {
+        // シャッフル処理
+        for (let i = levelFilteredQuestions.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [levelFilteredQuestions[i], levelFilteredQuestions[j]] = [levelFilteredQuestions[j], levelFilteredQuestions[i]];
         }
-        
-        // 🚀【大改善】登録されている問題数（最大5問）に自動でぴったり合わせるセーフティ
-        // まだ問題数が少ないときは、その登録数（1問や2問など）をそのまま最大数にセットします
+
         const limit = Math.min(5, levelFilteredQuestions.length);
         currentPlayQuestions = levelFilteredQuestions.slice(0, limit);
 
-        // 5. 画面を切り替える
-        document.getElementById('start-screen').classList.add('hidden');
+        // 💡 画面表示の確実な切り替え
+        document.getElementById('start-screen').style.display = 'none';
         document.getElementById('quiz-screen').classList.remove('hidden');
 
-        // 6. クイズの初期化（1問目を読み込んで表示する）
         currentQuestionIndex = 0;
-        loadQuestion(); // 💡既存の読み込み関数（loadQuestion）を呼び出してスタート！
+        loadQuestion();
     }
-
-    async function initApp() {
+    
+  async function initApp() {
       try {
-        // 1. 元々の quiz.json（1〜11問）を読み込む
-        const response = await fetch('quiz.json');
-        if (!response.ok) throw new Error('JSONファイルの読み込みに失敗しました');
-        const jsonQuestions = await response.json();
-        
-        // 2. ブラウザ（LocalStorage）に保存されている「追加問題」があれば読み込む
-        const localQuestionsData = localStorage.getItem('dockais_added_questions');
-        const localQuestions = localQuestionsData ? JSON.parse(localQuestionsData) : [];
-        
-        // 3. 元のデータと追加データを合体させる! （...を追加してフラットに合体）
-        allQuizData = [...jsonQuestions, ...localQuestions];
+          // 1. 元々の quiz.json を読み込む
+          const response = await fetch('quiz.json');
+          if (!response.ok) throw new Error('JSONファイルの読み込みに失敗しました');
+          const jsonQuestions = await response.json();
 
-        console.log('データの読み込みが完了しました! 問題数:', allQuizData.length);
-            
-        // 🛠️ データが揃ったので、パーツ2で作ったメニューの選択肢をここで起動！
-        createDebugMenu();
-        
+          // 2. LocalStorage の追加問題を読み込む
+          const localQuestionsData = localStorage.getItem('dockais_added_questions');
+          const localQuestions = localQuestionsData ? JSON.parse(localQuestionsData) : [];
+
+          // 3. スプレッド演算子「...」でフラットに合体してバグを解消
+          allQuizData = [...jsonQuestions, ...localQuestions];
+
+          console.log('データの読み込みが完了しました! 問題数:', allQuizData.length);
+          
+          // 🛠️ データが揃ったので、メニューの選択肢をここで起動
+          createDebugMenu();
+
       } catch (error) {
-        console.error(error);
-        document.getElementById('question-text').innerText = 'エラー：もんだいデータが よみこめませんでした。';
+          console.error(error);
+          document.getElementById('question-text').innerText = 'エラー: もんだいデータが よみこめませんでした。';
       }
-    }
+  }
 
     // 💡 setupGame関数は役割をstartQuizに統合したため、中身を空にするか削除して大丈夫です
     function setupGame() {
@@ -1037,26 +1028,31 @@ h1 {
     */
     function selectTestQuestion(questionId) {
         if (!questionId) {
-            alert("ランダム出題モードに戻します。ページを再読み込みします。");
+            alert("スタート画面に戻ります。");
             location.reload();
             return;
         }
 
-        // 1. 全データの中から、セレクトボックスで選ばれたIDの問題を探す
-        // ※IDが文字列の場合は q.id == questionId に適宜修正してください
-        const targetQuiz = allQuestionsData.find(q => q.id == parseInt(questionId));
+        const targetQuiz = allQuizData.find(q => q.id === parseInt(questionId));
 
         if (targetQuiz) {
-            console.log("テスト問題をロードしました:", targetQuiz);
-        
-            // 2. 現在進行中の問題データを、ターゲットの問題に差し替える
-            // (既存のアニメーション描画関数や、画面更新関数をここで呼び出します)
-            renderQuestion(targetQuiz); 
+            console.log("🛠️ デバッグ：問題ID [" + questionId + "] を強制表示します。", targetQuiz);
+            
+            currentPlayQuestions = [targetQuiz];
+            currentQuestionIndex = 0;
+
+            // 💡 画面表示の確実な切り替え（CSSの干渉を防ぐためdisplayとclassListの両方を制御）
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            loadQuestion();
+
+            const resultBox = document.getElementById("result-box");
+            if (resultBox) resultBox.style.display = "none";
         } else {
-            alert("指定された問題データ（id: " + questionId + "）が見つかりません。");
+            alert("指定された問題ID: " + questionId + " がデータ内に見つかりません。");
         }
     }
-
 
 
     // 💡 txtファイルの読み込み（fetch）がなくなり、一瞬で画面が切り替わる安全な関数に進化しました
