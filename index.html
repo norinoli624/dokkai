@@ -883,9 +883,9 @@ h1 {
 
 
 
-/**
-* 🛠️ JSONデータからデバッグメニューの選択肢を自動生成する関数
-*/
+    /**
+     * 🛠️ JSONデータからデバッグメニューの選択肢を自動生成する関数（20問目以降限定）
+     */
     function createDebugMenu() {
         const selectEl = document.getElementById("debug-question-select");
         if (!selectEl || !allQuizData || allQuizData.length === 0) return;
@@ -896,6 +896,9 @@ h1 {
         const sortedQuestions = [...allQuizData].sort((a, b) => parseInt(a.id) - parseInt(b.id));
 
         sortedQuestions.forEach(q => {
+            // 💡【追加】IDが20番未満（1〜19問目）の場合はメニューに追加せずスキップする！
+            if (parseInt(q.id) < 20) return;
+
             const option = document.createElement("option");
             option.value = q.id;
             const previewText = q.questionText ? q.questionText.replace(/[\n◆【】]/g, "").substring(0, 15) : "";
@@ -903,7 +906,7 @@ h1 {
             selectEl.appendChild(option);
         });
     }
-
+    
     /**
      * 🛠️ ドロップダウンで選んだ問題を強制ロードしてクイズ画面を起動する関数
      */
