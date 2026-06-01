@@ -776,14 +776,14 @@ h1 {
 
 <body>
 
-  <!-- 🛠️ テスト用 問題セレクトメニュー -->
-  <div id="debug-menu" style="background: #ffffff; padding: 12px; border-radius: 12px; margin: 10px auto; max-width: 960px; border: 3px dashed #007bff; text-align: left; box-sizing: border-box; font-family: sans-serif;">
+  <!-- 🛠️ テスト用 問題セレクトメニュー（最上部固定） -->
+  <div id="debug-menu" style="background: #ffffff; padding: 10px 16px; border-radius: 12px; margin: 10px auto; max-width: 960px; border: 3px dashed #007bff; text-align: left; box-sizing: border-box; font-family: sans-serif; position: relative; z-index: 999999;">
       <strong style="color: #007bff; font-size: 15px;">🛠️ テスト用 問題セレクト:</strong>
-      <select id="debug-question-select" onchange="selectTestQuestion(this.value)" style="padding: 6px; font-size: 14px; border-radius: 6px; border: 2px solid #007bff; margin-left: 10px; cursor: pointer;">
+      <select id="debug-question-select" onchange="selectTestQuestion(this.value)" style="padding: 6px; font-size: 14px; border-radius: 6px; border: 2px solid #007bff; margin-left: 10px; cursor: pointer; max-width: 70%;">
           <option value="">-- 問題を選んでテスト（またはスタート画面へ） --</option>
-          <!-- 💡 ここにJavaScriptが自動で選択肢を作って流し込みます -->
       </select>
   </div>
+
 
   <!-- スタート画面（修正版） -->
   <div id="start-screen">
@@ -883,54 +883,57 @@ h1 {
 
 
 
-// 🛠️ JSONデータから自動で選択肢のメニューを作る関数
-function createDebugMenu() {
-    const selectEl = document.getElementById("debug-question-select");
-    if (!selectEl || !allQuizData || allQuizData.length === 0) return;
+/**
+* 🛠️ JSONデータからデバッグメニューの選択肢を自動生成する関数
+*/
+    function createDebugMenu() {
+        const selectEl = document.getElementById("debug-question-select");
+        if (!selectEl || !allQuizData || allQuizData.length === 0) return;
 
-    selectEl.innerHTML = '<option value="">-- 問題を選んでテスト（またはスタート画面へ） --</option>';
+        selectEl.innerHTML = '<option value="">-- 問題を選んでテスト（またはスタート画面へ） --</option>';
 
-    // 全問題データをIDの順番に並び替える
-    const sortedQuestions = [...allQuizData].sort((a, b) => parseInt(a.id) - parseInt(b.id));
+        // ID順に並び替え
+        const sortedQuestions = [...allQuizData].sort((a, b) => parseInt(a.id) - parseInt(b.id));
 
-    sortedQuestions.forEach(q => {
-        const option = document.createElement("option");
-        option.value = q.id;
-        
-        // メニューに表示するテキスト（問題文の最初の15文字を自動で表示）
-        const previewText = q.questionText ? q.questionText.replace(/[\n◆【】]/g, "").substring(0, 15) : "";
-        option.textContent = `ID: ${q.id} (レベル${q.level || "1"}) - ${previewText}...`;
-        selectEl.appendChild(option);
-    });
-}
-
-// 🛠️ ドロップダウンで選んだ問題を画面に強制表示する関数
-function selectTestQuestion(questionId) {
-    if (!questionId) {
-        alert("スタート画面に戻ります。");
-        location.reload();
-        return;
+        sortedQuestions.forEach(q => {
+            const option = document.createElement("option");
+            option.value = q.id;
+            const previewText = q.questionText ? q.questionText.replace(/[\n◆【】]/g, "").substring(0, 15) : "";
+            option.textContent = `ID: ${q.id} (レベル${q.level || "1"}) - ${previewText}...`;
+            selectEl.appendChild(option);
+        });
     }
 
-    const targetQuiz = allQuizData.find(q => q.id === parseInt(questionId));
+    /**
+     * 🛠️ ドロップダウンで選んだ問題を強制ロードしてクイズ画面を起動する関数
+     */
+    function selectTestQuestion(questionId) {
+        if (!questionId) {
+            alert("スタート画面に戻ります。");
+            location.reload();
+            return;
+        }
 
-    if (targetQuiz) {
-        console.log("🛠️ デバッグ：問題ID [" + questionId + "] をロードしました。", targetQuiz);
-        
-        // 現在の問題配列を選択した1問だけに書き換える
-        currentPlayQuestions = [targetQuiz];
-        currentQuestionIndex = 0;
+        const targetQuiz = allQuizData.find(q => q.id === parseInt(questionId));
 
-        // 画面を描き換える既存の関数を呼び出す
-        loadQuestion();
+        if (targetQuiz) {
+            console.log("🛠️ デバッグ：問題ID [" + questionId + "] を強制表示します。", targetQuiz);
+            
+            currentPlayQuestions = [targetQuiz];
+            currentQuestionIndex = 0;
 
-        // 正解・不正解ポップアップが開いていたら隠す
-        const resultBox = document.getElementById("result-box");
-        if (resultBox) resultBox.style.display = "none";
-    } else {
-        alert("指定された問題ID: " + questionId + " がデータ内に見つかりません。");
+            // 画面表示の確実な切り替え
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            loadQuestion();
+
+            const resultBox = document.getElementById("result-box");
+            if (resultBox) resultBox.style.display = "none";
+        } else {
+            alert("指定された問題ID: " + questionId + " がデータ内に見つかりません。");
+        }
     }
-}
 
 
 
@@ -1006,12 +1009,12 @@ function selectTestQuestion(questionId) {
         const localQuestionsData = localStorage.getItem('dockais_added_questions');
         const localQuestions = localQuestionsData ? JSON.parse(localQuestionsData) : [];
         
-        // 3. 元のデータと追加データを合体させる！
+        // 3. 元のデータと追加データを合体させる! （...を追加してフラットに合体）
         allQuizData = [...jsonQuestions, ...localQuestions];
-        
-        // 💡【変更】アプリ起動時はデータ読み込みだけを行い、自動スタート（setupGame）はさせない
-        console.log('データの読み込みが完了しました！問題数:', allQuizData.length);
 
+        console.log('データの読み込みが完了しました! 問題数:', allQuizData.length);
+            
+        // 🛠️ データが揃ったので、パーツ2で作ったメニューの選択肢をここで起動！
         createDebugMenu();
         
       } catch (error) {
