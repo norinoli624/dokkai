@@ -988,7 +988,7 @@ h1 {
         currentQuestionIndex = 0;
         loadQuestion();
     }
-    
+
   async function initApp() {
       try {
           // 1. 元々の quiz.json を読み込む
@@ -1012,7 +1012,11 @@ h1 {
           console.error(error);
           document.getElementById('question-text').innerText = 'エラー: もんだいデータが よみこめませんでした。';
       }
+      // 💡【追加】初期化の最後に、クイズ画面を確実に隠してスタート画面だけを残す！
+      document.getElementById('quiz-screen').classList.add('hidden'); 
   }
+
+
 
     // 💡 setupGame関数は役割をstartQuizに統合したため、中身を空にするか削除して大丈夫です
     function setupGame() {
