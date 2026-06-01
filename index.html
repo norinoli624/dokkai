@@ -884,20 +884,40 @@ h1 {
 
 
     /**
-     * 🛠️ JSONデータからデバッグメニューの選択肢を自動生成する関数（20問目以降限定）
+     * 🛠️ JSONデータからデバッグメニューの選択肢を自動生成する関数（20問目以降・レベル別カウント付き）
      */
     function createDebugMenu() {
         const selectEl = document.getElementById("debug-question-select");
         if (!selectEl || !allQuizData || allQuizData.length === 0) return;
 
-        selectEl.innerHTML = '<option value="">-- 問題を選んでテスト（またはスタート画面へ） --</option>';
+        // 💡 1. 各レベルの問題数をカウントする変数を準備（20問目以降のみを対象）
+        let countLvl1 = 0;
+        let countLvl2 = 0;
+        let countLvl3 = 0;
+
+        allQuizData.forEach(q => {
+            if (parseInt(q.id) < 20) return; // 1〜19問目は集計から除外
+            const lvl = String(q.level || "1");
+            if (lvl === "1") countLvl1++;
+            if (lvl === "2") countLvl2++;
+            if (lvl === "3") countLvl3++;
+        });
+
+        // 💡 2. メニューの先頭（タイトル）に現在の問題数をリアルタイム表示
+        selectEl.innerHTML = `
+            <option value="">-- 問題を選んでテスト（またはスタート画面へ） --</option>
+            <option value="" disabled style="font-weight: bold; color: #333;">
+                📊 現在の問題数 ➔ 【レベル1】: ${countLvl1}問 / 【レベル2】: ${countLvl2}問 / 【レベル3】: ${countLvl3}問
+            </option>
+            <option value="" disabled>--------------------------------------------------</option>
+        `;
 
         // ID順に並び替え
         const sortedQuestions = [...allQuizData].sort((a, b) => parseInt(a.id) - parseInt(b.id));
 
+        // 💡 3. 選択肢をドロップダウンに追加
         sortedQuestions.forEach(q => {
-            // 💡【追加】IDが20番未満（1〜19問目）の場合はメニューに追加せずスキップする！
-            if (parseInt(q.id) < 20) return;
+            if (parseInt(q.id) < 20) return; // 1〜19問目はスキップ
 
             const option = document.createElement("option");
             option.value = q.id;
