@@ -801,7 +801,7 @@ h1 {
   </div>
 
   <!-- クイズ画面(初期状態は hidden で隠しておく) -->
-<div id="quiz-screen" class="hidden">
+  <div id="quiz-screen" class="hidden">
     <div style="margin-top: 10px; margin-bottom: 10px;">
         <img src="logo.png" alt="ドッカイズ! ロゴ" style="max-width: 300px; width: 100%; height: auto;">
     </div>
@@ -839,6 +839,36 @@ h1 {
 
 
   <script>
+(function() {
+    // 💡 1. 好きなパスワード（合言葉）に書き換えてください
+    const CORRECT_PASSWORD = "dockize2026"; 
+
+    // 💡 2. すでに認証済みかチェック（ブラウザのタブを閉じるまで有効）
+    if (sessionStorage.getItem("quiz_authenticated") === "true") {
+        // 認証済みなら、HTMLにある「hidden」クラスを取り除いて画面を表示
+        const screen = document.getElementById("quiz-screen");
+        if (screen) screen.classList.remove("hidden");
+        return;
+    }
+
+    // 💡 3. 画面を開いた瞬間にパスワード入力を求める
+    let userPassword = prompt("【ドッカイズ！】テスト運用画面です。\n関係者向けのパスワードを入力してください。");
+
+    // 💡 4. パスワードの判定
+    if (userPassword === CORRECT_PASSWORD) {
+        alert("認証に成功しました！クイズを開始します。");
+        // 認証成功をブラウザに記憶させる
+        sessionStorage.setItem("quiz_authenticated", "true");
+        // クイズ画面の非表示（hidden）を解除して表示する
+        const screen = document.getElementById("quiz-screen");
+        if (screen) screen.classList.remove("hidden");
+    } else {
+        alert("パスワードが違います。アクセスできません。");
+        // パスワードが違う場合は、画面を真っ白にして完全にブロックする
+        document.body.innerHTML = "<h1 style='text-align:center; margin-top:20%; font-family:sans-serif;'>🔒 アクセス権限がありません。</h1>";
+    }
+})();
+
         // 🌟 設定：1回のゲームで何問出題するか
     const QUESTIONS_PER_GAME = 10;
 
