@@ -808,6 +808,16 @@ h1 {
     <div id="progress" class="progress-text">データをよみこみ中... </div>
     <h1 id="question-text">読み込み中... </h1>
 
+  <!-- 🛠️ テスト用 問題セレクトメニュー -->
+  <div id="debug-menu" style="background: #ffffff; padding: 12px; border-radius: 12px; margin: 10px auto; max-width: 960px; border: 3px dashed #007bff; text-align: left; box-sizing: border-box; font-family: sans-serif;">
+      <strong style="color: #007bff; font-size: 15px;">🛠️ テスト用 問題セレクト:</strong>
+      <select id="debug-question-select" onchange="selectTestQuestion(this.value)" style="padding: 6px; font-size: 14px; border-radius: 6px; border: 2px solid #007bff; margin-left: 10px; cursor: pointer;">
+          <option value="">-- 問題を選んでテスト（またはスタート画面へ） --</option>
+          <!-- 💡 ここにJavaScriptが自動で選択肢を作って流し込みます -->
+      </select>
+  </div>
+
+
     <!-- ★ここに content-wrapper を移動（問題文の下から囲むことで、スタート画面での露出を100%防ぎます） -->
     <div class="content-wrapper">
         <!-- ※JavaScriptによって、ここに「.main-image-container」と「#quiz-container」が自動挿入されます -->
@@ -868,6 +878,64 @@ h1 {
         document.body.innerHTML = "<h1 style='text-align:center; margin-top:20%; font-family:sans-serif;'>🔒 アクセス権限がありません。</h1>";
     }
 })();
+
+
+
+
+
+// 🛠️ JSONデータから自動で選択肢のメニューを作る関数
+function createDebugMenu() {
+    const selectEl = document.getElementById("debug-question-select");
+    if (!selectEl || !allQuizData || allQuizData.length === 0) return;
+
+    selectEl.innerHTML = '<option value="">-- 問題を選んでテスト（またはスタート画面へ） --</option>';
+
+    // 全問題データをIDの順番に並び替える
+    const sortedQuestions = [...allQuizData].sort((a, b) => parseInt(a.id) - parseInt(b.id));
+
+    sortedQuestions.forEach(q => {
+        const option = document.createElement("option");
+        option.value = q.id;
+        
+        // メニューに表示するテキスト（問題文の最初の15文字を自動で表示）
+        const previewText = q.questionText ? q.questionText.replace(/[\n◆【】]/g, "").substring(0, 15) : "";
+        option.textContent = `ID: ${q.id} (レベル${q.level || "1"}) - ${previewText}...`;
+        selectEl.appendChild(option);
+    });
+}
+
+// 🛠️ ドロップダウンで選んだ問題を画面に強制表示する関数
+function selectTestQuestion(questionId) {
+    if (!questionId) {
+        alert("スタート画面に戻ります。");
+        location.reload();
+        return;
+    }
+
+    const targetQuiz = allQuizData.find(q => q.id === parseInt(questionId));
+
+    if (targetQuiz) {
+        console.log("🛠️ デバッグ：問題ID [" + questionId + "] をロードしました。", targetQuiz);
+        
+        // 現在の問題配列を選択した1問だけに書き換える
+        currentPlayQuestions = [targetQuiz];
+        currentQuestionIndex = 0;
+
+        // 画面を描き換える既存の関数を呼び出す
+        loadQuestion();
+
+        // 正解・不正解ポップアップが開いていたら隠す
+        const resultBox = document.getElementById("result-box");
+        if (resultBox) resultBox.style.display = "none";
+    } else {
+        alert("指定された問題ID: " + questionId + " がデータ内に見つかりません。");
+    }
+}
+
+
+
+
+
 
         // 🌟 設定：1回のゲームで何問出題するか
     const QUESTIONS_PER_GAME = 10;
@@ -943,6 +1011,8 @@ h1 {
         
         // 💡【変更】アプリ起動時はデータ読み込みだけを行い、自動スタート（setupGame）はさせない
         console.log('データの読み込みが完了しました！問題数:', allQuizData.length);
+
+        createDebugMenu();
         
       } catch (error) {
         console.error(error);
@@ -954,6 +1024,36 @@ h1 {
     function setupGame() {
       // 互換性のために残す場合は空欄にします
     }
+
+
+    // 💡 全体の問題データを保持するグローバル変数（既存の変数名に合わせてください）
+    let allQuestionsData = []; 
+
+    /**
+    * 🛠️ 選択した特定のコードの問題を強制的に表示する関数
+    */
+    function selectTestQuestion(questionId) {
+        if (!questionId) {
+            alert("ランダム出題モードに戻します。ページを再読み込みします。");
+            location.reload();
+            return;
+        }
+
+        // 1. 全データの中から、セレクトボックスで選ばれたIDの問題を探す
+        // ※IDが文字列の場合は q.id == questionId に適宜修正してください
+        const targetQuiz = allQuestionsData.find(q => q.id == parseInt(questionId));
+
+        if (targetQuiz) {
+            console.log("テスト問題をロードしました:", targetQuiz);
+        
+            // 2. 現在進行中の問題データを、ターゲットの問題に差し替える
+            // (既存のアニメーション描画関数や、画面更新関数をここで呼び出します)
+            renderQuestion(targetQuiz); 
+        } else {
+            alert("指定された問題データ（id: " + questionId + "）が見つかりません。");
+        }
+    }
+
 
 
     // 💡 txtファイルの読み込み（fetch）がなくなり、一瞬で画面が切り替わる安全な関数に進化しました
