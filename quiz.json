@@ -440,7 +440,7 @@
 				{ "text": "左：6\n真ん中：6\n右：4", "isCorrect": false, "type": "hint1" },
 				{ "text": "左：3\n真ん中：2\n右：3", "isCorrect": false, "type": "hint2" }
 			]
-		},
+		}
 
 
 
