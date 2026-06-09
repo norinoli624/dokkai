@@ -431,10 +431,12 @@ h1 {
   gap: 20px;            /* カード同士の隙間 */
   width: 100% !important;
   max-width: 100% !important; /* 制限を完全解除 */
-  height: 28vh !important;    /* 縦幅を28%に固定し、文字が溢れないようにする */
+  height: 26vh !important; /* height: 28vh !important; */    /* 縦幅を28%に固定し、文字が溢れないようにする */
+  max-height: 30vh !important;
   margin: 0 auto 4px auto;
   padding: 0;
   box-sizing: border-box;
+  overflow: hidden !important; /* 外側のハミ出しを完全にカット */
 }
 
 /* 文章選択肢のカード（画像なし・純粋なステップ表示用リッチボタン） */
@@ -963,8 +965,8 @@ h1 {
 
 
 
-        // 🌟 設定：1回のゲームで何問出題するか
-    const QUESTIONS_PER_GAME = 10;
+    // 🌟 設定：1回のゲームで何問出題するか
+    const QUESTIONS_PER_GAME = 5;
 
     let allQuizData = [];           // すべてのデータが入る配列
     let currentPlayQuestions = [];  // 今回プレイする問題が入る配列
@@ -1001,13 +1003,12 @@ h1 {
             [levelFilteredQuestions[i], levelFilteredQuestions[j]] = [levelFilteredQuestions[j], levelFilteredQuestions[i]];
         }
 
-        const limit = Math.min(5, levelFilteredQuestions.length);
-        currentPlayQuestions = levelFilteredQuestions.slice(0, limit);
+        // 【仕様適合】QUESTIONS_PER_GAME（5問）の定数を用いて正確に切り出し
+        currentPlayQuestions = levelFilteredQuestions.slice(0, QUESTIONS_PER_GAME);
 
         // 💡 画面表示の確実な切り替え
         document.getElementById('start-screen').style.display = 'none';
         document.getElementById('quiz-screen').classList.remove('hidden');
-
         currentQuestionIndex = 0;
         loadQuestion();
     }
