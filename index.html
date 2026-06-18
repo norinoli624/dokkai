@@ -898,7 +898,7 @@ h1 {
         let countLvl3 = 0;
 
         allQuizData.forEach(q => {
-            if (parseInt(q.id) < 20) return; // 1〜19問目は集計から除外
+            if (parseInt(q.id) < 28) return; // 1〜27問目は集計から除外
             const lvl = String(q.level || "1");
             if (lvl === "1") countLvl1++;
             if (lvl === "2") countLvl2++;
@@ -919,7 +919,7 @@ h1 {
 
         // 💡 3. 選択肢をドロップダウンに追加
         sortedQuestions.forEach(q => {
-            if (parseInt(q.id) < 20) return; // 1〜19問目はスキップ
+            if (parseInt(q.id) < 28) return; // 1〜27問目はスキップ
 
             const option = document.createElement("option");
             option.value = q.id;
@@ -989,7 +989,7 @@ h1 {
         let levelFilteredQuestions = allQuizData.filter(quiz => {
             const lvl = quiz.level || '1';
             const quizId = quiz.id;
-            return lvl === selectedLevel && quizId >= 21;
+            return lvl === selectedLevel && quizId >= 28;
         });
 
         if (levelFilteredQuestions.length === 0) {
