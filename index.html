@@ -773,6 +773,38 @@ h1 {
     opacity: 0;
   }
 }
+
+/* =======================================================
+   ★ 新機能：1文タッチハイライト（画面間延びバグ完全修正版）
+   ======================================================= */
+/* 初期状態：すべての文字を「目に優しい濃いグレー」にして、普段の読みやすさを100%保証 */
+.reading-chunk {
+    display: inline !important;       /* 💡 超重要：inlineに戻すことでテキストの自然な折り返しが完全復活！画面崩れをゼロにします */
+    cursor: pointer;
+    padding: 0px 2px;
+    border-radius: 4px;
+    color: #37474F; 
+    background-color: transparent;
+    transition: all 0.2s ease;
+    white-space: normal !important;   /* 💡 横方向への異常なハミ出しを完全に防止 */
+    word-break: break-all;            /* 💡 端に来たら綺麗に文字単位で折り返す */
+    box-decoration-break: clone;      /* 💡 複数行にまたがっても文字の輪郭だけを美しく光らせる */
+    -webkit-box-decoration-break: clone;
+}
+
+/* マウスホバー時（PC操作用の親切なセーフティ） */
+.reading-chunk:hover {
+    background-color: rgba(255, 224, 178, 0.4); 
+}
+
+/* ★現在アクティブな1文：文字幅だけをピンポイントでみかん色に点灯！画面を縦長に膨張させない安心設計 */
+.reading-chunk.active-chunk {
+    display: inline !important;       /* 💡 ここもinlineに統一して、ブロック化によるレイアウト崩れを完全封殺 */
+    color: #0D47A1 !important; 
+    background-color: #FFE082 !important; 
+    font-weight: bold !important;
+}
+
   </style>
 </head>
 
@@ -1082,8 +1114,83 @@ h1 {
         }
     }
 
+    // 💡 新機能：長文の途中での強制切断を完全に廃止し、句読点を100%文末にロックする関数（完全確定版）
+    function renderInteractiveQuestion(text) {
+        const questionTextEl = document.getElementById('question-text');
+        if (!questionTextEl) return;
 
-    // 💡 txtファイルの読み込み（fetch）がなくなり、一瞬で画面が切り替わる安全な関数に進化しました
+        // 1. 改行（\n）および 句読点（。や、）を完全に独立したトークンとして安全にスライスする
+        const rawTokens = text.split(/(\n|[。、])/);
+        
+        const finalChunks = [];
+        let currentBuffer = "";
+        const MIN_CHAR_LENGTH = 15; // 💡 接続詞などの細切れを防ぐための最低文字数
+
+        // 2. トークンを精査し、句読点や改行がくるまで絶対に文章を途中で引き裂かない
+        for (let i = 0; i < rawTokens.length; i++) {
+            const token = rawTokens[i];
+            if (!token) continue;
+
+            // 💡 超重要：本物の改行（\n）がきたら、それまで溜まっていた見出し等の文字を即座に出し切る！
+            if (token === '\n') {
+                if (currentBuffer.trim() !== "") {
+                    finalChunks.push(currentBuffer);
+                }
+                finalChunks.push('\n'); // 改行マークを独立して保存
+                currentBuffer = "";
+                continue;
+            }
+
+            currentBuffer += token;
+
+            // 💡 解決のポイント：トークンが「、」や「。」という区切り文字そのものだった場合だけ分割を判定！
+            // これにより、40文字以上の長文であっても途中で無慈悲に引き裂かれるバグが完全に消滅します。
+            if (token === '、' || token === '。') {
+                // 記号を除いた純粋な文字数をカウント
+                const cleanLength = currentBuffer.replace(/[\n、。 ]/g, "").length;
+                
+                // 15文字を超えていたら、ここで1つの美しいチャンクとして完全に切り離す
+                if (cleanLength >= MIN_CHAR_LENGTH) {
+                    finalChunks.push(currentBuffer);
+                    currentBuffer = ""; // バッファをリセット
+                }
+            }
+        }
+        
+        // 最後に残ったバッファをすべて美しく回収
+        if (currentBuffer.trim() !== "") {
+            finalChunks.push(currentBuffer);
+        }
+
+        // 3. 構築された完璧なチャンク配列を画面に流し込む
+        questionTextEl.innerHTML = "";
+        
+        finalChunks.forEach((chunkText) => {
+            if (chunkText === '\n') {
+                questionTextEl.appendChild(document.createElement('br'));
+                return;
+            }
+
+            const span = document.createElement('span');
+            span.className = 'reading-chunk';
+            span.innerText = chunkText; 
+
+            // 💡 指でタッチしたときのイベント処理
+            span.onclick = function(e) {
+                e.stopPropagation();
+                
+                document.querySelectorAll('.reading-chunk').forEach(el => {
+                    el.classList.remove('active-chunk');
+                });
+                this.classList.add('active-chunk');
+            };
+
+            questionTextEl.appendChild(span);
+        });
+    }
+
+
+    // 💡 txtファイルの読み込み（fetch）がなくなり、一瞬で画面が切り替わる安全な関数に進化しました（画像回り込みバグ完全修正版）
     function loadQuestion() {
         if (currentPlayQuestions.length == 0) return;
         const currentQuiz = currentPlayQuestions[currentQuestionIndex];
@@ -1091,8 +1198,8 @@ h1 {
         // 1. ヘッダー情報のセット
         document.getElementById('progress').innerText = `だい ${currentQuestionIndex + 1} もん / ぜん ${currentPlayQuestions.length} もん`;
         
-        // 2. 問題文指示テキストの表示
-        document.getElementById('question-text').innerText = currentQuiz.questionText;
+        // 2. 問題文指示テキストをインテリジェントタッチハイライト仕様で表示
+        renderInteractiveQuestion(currentQuiz.questionText);
         
         // 3. 不正解時のヒントの記録
         currentHints.hint1 = currentQuiz.hint1 || "よくよんでみよう！";
@@ -1104,7 +1211,7 @@ h1 {
         resultBox.style.display = 'none';
         resultBox.className = 'result-message';
         
-        // 5. メイン画像エリアの構築（古い画像コンテナがあれば削除して新設）
+        // 5. メイン画像エリアの構築（古い画像コンテナがあれば確実に削除して新設）
         let existingImgContainer = document.querySelector('.main-image-container');
         if (existingImgContainer) {
             existingImgContainer.remove();
@@ -1115,9 +1222,12 @@ h1 {
             mainImgContainer.className = 'main-image-container';
             mainImgContainer.innerHTML = `<img src="${currentQuiz.questionImage}" alt="もんだいのえ">`;
             
-            // 問題文（#question-text）のすぐ後ろに画像を挿入
-            const qText = document.getElementById('question-text');
-            qText.parentNode.insertBefore(mainImgContainer, qText.nextSibling);
+            // 💡 解決のポイント：問題文（#question-text）の中ではなく、その下にある専用の外枠（.content-wrapper）の先頭に画像を確実に挿入！
+            // これにより、ハイライトされた文章が画像の回り込みによって引き裂かれるバグが100%完全に消滅します。
+            const wrapper = document.querySelector('.content-wrapper');
+            if (wrapper) {
+                wrapper.insertBefore(mainImgContainer, wrapper.firstChild);
+            }
         }
         
         // 6. 選択肢コンテナのクリア
@@ -1159,7 +1269,6 @@ h1 {
             container.appendChild(card);
         });
     }
-
 
 
 
