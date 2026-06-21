@@ -1114,50 +1114,67 @@ h1 {
         }
     }
 
-    // 💡 新機能：長文の途中での強制切断を完全に廃止し、句読点を100%文末にロックする関数（完全確定版）
+    // 💡 新機能：見出しの◆マークを検知して強制切断し、接続詞の細切れを100%防ぐ関数（完全版）
     function renderInteractiveQuestion(text) {
         const questionTextEl = document.getElementById('question-text');
         if (!questionTextEl) return;
 
-        // 1. 改行（\n）および 句読点（。や、）を完全に独立したトークンとして安全にスライスする
-        const rawTokens = text.split(/(\n|[。、])/);
+        // 1. 文章を必ず「。や、や\nの【直後】」で区切る
+        const rawSegments = text.match(/[^。、\n]+[。、\n]?|\n/g) || [text];
         
         const finalChunks = [];
         let currentBuffer = "";
-        const MIN_CHAR_LENGTH = 15; // 💡 接続詞などの細切れを防ぐための最低文字数
+        const MIN_CHAR_LENGTH = 15; // 💡 読点（、）の後の細切れを防ぐための最低文字数
 
-        // 2. トークンを精査し、句読点や改行がくるまで絶対に文章を途中で引き裂かない
-        for (let i = 0; i < rawTokens.length; i++) {
-            const token = rawTokens[i];
-            if (!token) continue;
-
-            // 💡 超重要：本物の改行（\n）がきたら、それまで溜まっていた見出し等の文字を即座に出し切る！
-            if (token === '\n') {
+        // 2. 句点（。）や見出し記号（◆）を検知して、適切な長さで美しく結合・切断する
+        for (let i = 0; i < rawSegments.length; i++) {
+            const segment = rawSegments[i];
+            
+            // 独立した改行マーク（\n）がきた場合
+            if (segment === '\n') {
                 if (currentBuffer.trim() !== "") {
                     finalChunks.push(currentBuffer);
                 }
-                finalChunks.push('\n'); // 改行マークを独立して保存
+                finalChunks.push('\n');
                 currentBuffer = "";
                 continue;
             }
 
-            currentBuffer += token;
+            currentBuffer += segment;
 
-            // 💡 解決のポイント：トークンが「、」や「。」という区切り文字そのものだった場合だけ分割を判定！
-            // これにより、40文字以上の長文であっても途中で無慈悲に引き裂かれるバグが完全に消滅します。
-            if (token === '、' || token === '。') {
-                // 記号を除いた純粋な文字数をカウント
+            // 💡 解決の核心①：もしバッファの中に見出しの「◆」が含まれていたら、文字数に関係なく100%ここで強制切断！
+            // これにより、見出しが後ろの接続詞を巻き込んだり、フライングしてぶった切るバグを完全に封殺します。
+            if (currentBuffer.includes('◆')) {
+                if (currentBuffer.trim() !== "") {
+                    finalChunks.push(currentBuffer);
+                }
+                currentBuffer = "";
+                continue;
+            }
+
+            // 💡 解決の核心②：末尾が「。」（句点）で終わっていたら、文字数に関係なく100%ここで確定して切り出す！
+            if (segment.endsWith('。')) {
+                if (currentBuffer.trim() !== "") {
+                    finalChunks.push(currentBuffer);
+                }
+                currentBuffer = ""; 
+                continue;
+            }
+
+            // 末尾が「、」（読点）だった場合は、短すぎる接続詞（このあと、等）を防ぐため15文字判定を行う
+            if (segment.endsWith('、')) {
                 const cleanLength = currentBuffer.replace(/[\n、。 ]/g, "").length;
                 
-                // 15文字を超えていたら、ここで1つの美しいチャンクとして完全に切り離す
+                // 15文字を超えている場合だけ、1つの大きな塊として切り出す
                 if (cleanLength >= MIN_CHAR_LENGTH) {
                     finalChunks.push(currentBuffer);
-                    currentBuffer = ""; // バッファをリセット
+                    currentBuffer = "";
                 }
+                // 💡 15文字未満（例：「このあと、」など）の場合は、ここで区切らず、次の文章と結合するまでバッファにキープ！
             }
         }
         
-        // 最後に残ったバッファをすべて美しく回収
+        // 最後に残ったバッファをすべて安全に回収
         if (currentBuffer.trim() !== "") {
             finalChunks.push(currentBuffer);
         }
