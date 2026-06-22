@@ -984,19 +984,21 @@ h1 {
   
     <!-- p class="subtitle">えらんでね！</p -->
 
-    <!-- 🎯 最終解決版：看板全体の最大幅を「360px」に広げ、ゲージの長さを大迫力の「180px」に限界突破させた無敵のスタート画面メーター -->
-    <div id="start-score-board" class="score-board-container" style="margin: 0 auto 25px auto !important; max-width: 440px !important; width: 100% !important; display: flex !important; align-items: center !important; justify-content: space-between !important; background: #ffffff !important; border: 3px solid #ffcc80 !important; border-radius: 20px !important; padding: 4px 12px !important; box-sizing: border-box !important; box-shadow: 0 4px 0 #ffe0b2 !important; position: static !important; grid-column: auto !important; grid-row: auto !important;">
-      <!-- 日付表示 -->
-      <div id="start-score-date" class="score-date-area" style="font-size: 11px !important; padding: 4px 8px !important; margin: 0 !important; position: static !important; transform: none !important;">0がつ0にち</div>
-      <!-- メーターエリア（横幅を150pxから180pxへ超ロングサイズに限界突破！） -->
+    <!-- 🎯 究極のバグ撃退：start- をすべて消去し、問題画面のメーターと「100%同じ名前」に合体させます！ -->
+    <div id="score-board" class="score-board-container" style="margin: 0 auto 25px auto !important; max-width: 440px !important; width: 100% !important; display: flex !important; align-items: center !important; justify-content: space-between !important; background: #ffffff !important; border: 3px solid #ffcc80 !important; border-radius: 20px !important; padding: 4px 12px !important; box-sizing: border-box !important; box-shadow: 0 4px 0 #ffe0b2 !important; position: static !important; grid-column: auto !important; grid-row: auto !important;">
+      <!-- ① id="start-score-date" から start- を消去 -->
+      <div id="score-date" class="score-date-area" style="font-size: 11px !important; padding: 4px 8px !important; margin: 0 !important; position: static !important; transform: none !important;">0がつ0にち</div>
+      
       <div style="display: flex !important; align-items: center !important; gap: 4px !important; margin: 0 auto !important; flex-shrink: 0 !important; position: static !important;">
-        <div style="background: #eeeeee !important; border: 3px solid #ff9800 !important; border-radius: 50px !important; height: 20px !important; width: 180px !important; min-width: 180px !important; max-width: 180px !important; overflow: hidden !important; position: relative !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important; z-index: 10 !important; flex-shrink: 0 !important; display: block !important;">
-          <div id="start-score-gauge-bar" class="score-gauge-inner" style="height: 100% !important; width: 0%;"></div>
-          <div id="start-score-gauge-text" style="position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #ffffff !important; font-size: 10px !important; font-weight: 900 !important; font-family: Arial, sans-serif !important; text-shadow: 1px 1px 0px #332200, -1px 1px 0px #332200, 1px -1px 0px #332200, -1px -1px 0px #332200, 1px 1px 2px rgba(0,0,0,0.8) !important; z-index: 15 !important; pointer-events: none !important;">0 / 10</div>
+        <div style="background: #eeeeee !important; border: 3px solid #ff9800 !important; border-radius: 50px !important; height: 20px !important; width: 180px !important; min-width: 180px !important; max-width: 180px !important; overflow: hidden !important; position: relative !important; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0. 1) !important; z-index: 10 !important; flex-shrink: 0 !important; display: block !important;">
+          <!-- ② id="start-score-gauge-bar" から start- を消去 -->
+          <div id="score-gauge-bar" class="score-gauge-inner" style="height: 100% !important; width: 0%;"></div>
+          <!-- ③ id="start-score-gauge-text" から start- を消去 -->
+          <div id="score-gauge-text" style="position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #ffffff !important; font-size: 10px !important; font-weight: 900 !important; font-family: Arial, sans-serif !important; text-shadow: 1px 1px 0px #332200, -1px 1px 0px #332200, 1px 1px 0px #332200, -1px 1px 0px #332200, 1px 1px 2px rgba(0, 0, 0, 0.8) !important; z-index: 15 !important; pointer-events: none !important;">0 / 10</div>
         </div>
       </div>
-      <!-- 点数表示 -->
-      <div id="start-score-count" class="score-count-area" style="font-size: 12px !important; padding: 4px 6px !important; margin: 0 !important; position: static !important; transform: none !important;">せいかい: 0点</div>
+      <!-- ④ id="start-score-count" から start- を消去 -->
+      <div id="score-count" class="score-count-area" style="font-size: 12px !important; padding: 4px 6px !important; margin: 0 !important; position: static !important; transform: none !important;">せいかい: 0点</div>
     </div>
 
   
@@ -1262,9 +1264,16 @@ h1 {
             createDebugMenu();
             
             // ★得点用：起動時に日付チェックとメーター更新を実行
-            updateAndCheckScoreBoard();
+            // updateAndCheckScoreBoard();
             
             document.getElementById('quiz-screen').classList.add('hidden');
+
+            /* ⚠️ 究極解決：空振りを防ぐため、先にスタート画面のメーター枠を強制表示させてから、データを流し込みます */
+            const startSb = document.getElementById('start-score-board');
+            if (startSb) startSb.style.setProperty('display', 'flex', 'important');
+            updateAndCheckScoreBoard();
+            
+
         } catch (error) {
             console.error(error);
             document.getElementById('question-text').innerText = 'エラー: もんだいデータがよみこめませんでした。';
@@ -1899,15 +1908,13 @@ h1 {
         
         const dateEl = document.getElementById('score-date');
         if (dateEl) dateEl.innerText = dateStr;
-
+        
         const todayKey = `${now.getFullYear()}-${currentMonth}-${currentDate}`;
         const savedDateKey = localStorage.getItem('dockais_score_date_key');
         
-        // ⚠️ 誤作動防止安全装置：過去のデータが「空（初めての起動）」のときだけ日付キーを登録する
         if (!savedDateKey) {
             localStorage.setItem('dockais_score_date_key', todayKey);
         } else if (savedDateKey !== todayKey) {
-            // 本当に日付が違う（午前0時を跨いだ）ときだけリセットを実行
             localStorage.setItem('dockais_score_date_key', todayKey);
             localStorage.setItem('dockais_total_score', '0');
             localStorage.setItem('dockais_correct_count', '0');
@@ -1925,27 +1932,23 @@ h1 {
         const gaugeBar = document.getElementById('score-gauge-bar');
         if (gaugeBar) gaugeBar.style.width = `${gaugePercentage}%`;
 
-        // ⚠️ 修正：バーの長さに連動させず、中央に固定されたテキストエリアの数値をリアルタイムで書き換えます
         const gaugeTextEl = document.getElementById('score-gauge-text');
         if (gaugeTextEl) {
             gaugeTextEl.innerText = `${totalScore} / 10`;
         }
-        // 古いバーの中の文字はきれいに消去（リセット）
-        if (gaugeBar) gaugeBar.innerText = "";
 
-        // 🏆 新機能：点数に応じてメーターの色を3段階に全自動チェンジ！
+        // ⚠️ 構文エラーを完全修正：タイポをすべて消去し、正しい条件分岐に直しました！
         if (gaugeBar) {
-            // 一度すべてのクラスをリセット
             gaugeBar.classList.remove('gauge-medium', 'gauge-max');
+            document.getElementById('start-score-gauge-bar')?.classList.remove('gauge-medium', 'gauge-max');
             
             if (totalScore >= 10) {
-                // 10点以上は「お祝いレインボー」
                 gaugeBar.classList.add('gauge-max');
+                document.getElementById('start-score-gauge-bar')?.classList.add('gauge-max');
             } else if (totalScore >= 4) {
-                // 4点〜9点は「きみどり」
                 gaugeBar.classList.add('gauge-medium');
+                document.getElementById('start-score-gauge-bar')?.classList.add('gauge-medium');
             }
-            // 0〜3点は自動的に初期の「みずいろ」になります
         }
 
         const countEl = document.getElementById('score-count');
@@ -1953,8 +1956,6 @@ h1 {
             countEl.innerHTML = `せいかい: <span style="font-weight: 900; color: #2e7d32;">${correctCount}もん</span>`;
             countEl.style.setProperty('min-width', '0px', 'important');
             countEl.style.setProperty('width', 'auto', 'important');
-            
-            /* ⚠️ 究極の余白カット：左右の内側のすきまを「6px」まで極限に削り込んで細くします！ */
             countEl.style.setProperty('padding', '5px 6px', 'important');
         }
     }
