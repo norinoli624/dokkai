@@ -152,18 +152,21 @@ body.bg-level3 {
 }
 
 /* 「だい1もん / ぜん5もん」のバッジ */
-.progress-text {
-  display: inline-block;
-  font-size: 18px;
-  font-weight: bold;
-  color: #fff;
-  background-color: #ff9800;
-  padding: 6px 20px;
-  border-radius: 20px;
-  margin: 0 auto 6px auto;
-  box-shadow: 0 4px 0 #e65100;
-  text-align: center;
-}
+        .progress-text {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #ff9800;
+            padding: 6px 14px;
+            border-radius: 50px;
+            box-shadow: 0 3px 0 #e65100;
+            text-align: center;
+            flex-shrink: 0;
+            margin: 0 !important;
+            position: static !important;
+            transform: none !important;
+        }
 
 /* ===================================================
    ① 問題文（h1）の修正：横長画面での間延びを防ぎ、スリムに中央寄せ
@@ -252,21 +255,21 @@ h1 {
     padding: 4px 12px !important;
   }
 
-  /* 上の問題文：高さを「auto（自動）」にし、枠内スクロールを完全に消滅させます */
-  #quiz-screen:not(.hidden) h1 {
-    grid-column: 1 / 2 !important;
-    grid-row: 2 / 3 !important;
-    font-size: 15px !important;
-    line-height: 1.45 !important;
-    padding: 10px 14px !important;
-    width: 100% !important;
-    max-width: none !important;
-    height: auto !important;        /* 文字をすべて出し切るためautoに */
-    max-height: none !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
-    overflow: visible !important;   /* 枠内スクロールを完全撤廃 */
-  }
+        /* 🛠️ 問題文を元の安全な2段目（メーターのすぐ下）に完全に引き戻します */
+        #quiz-screen:not(.hidden) h1 {
+            grid-column: 1 / 2 !important;
+            grid-row: 2 / 3 !important;    /* ⚠️ 3/4 から元の 2/3 に戻して完全復活させます */
+            font-size: 15px !important;
+            line-height: 1.45 !important;
+            padding: 10px 14px !important;
+            width: 100% !important;
+            max-width: none !important;
+            height: auto !important;
+            max-height: none !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            overflow: visible !important;
+        }
 
   /* 外枠（content-wrapper）の透明化を維持 */
   #quiz-screen:not(.hidden) .content-wrapper {
@@ -805,6 +808,111 @@ h1 {
     font-weight: bold !important;
 }
 
+        /* ========================================================
+           6. 得点機能 (スコアシステム) & ラジカくんメーター
+        ======================================================== */
+        .score-board-container {
+            background: #ffffff;
+            border: 3px solid #ffcc80;
+            border-radius: 20px;
+            
+            height: 70px !important; 
+            
+            padding: 4px 16px; /* 上下の内側の余白も少し詰めます */
+            margin: 10px auto !important;
+            max-width: 960px;
+            width: 95%;
+            box-sizing: border-box;
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 0 #ffe0b2;
+            grid-column: 1 / 2 !important;
+            grid-row: 1 / 2 !important;
+            position: relative !important;
+        }
+
+
+        .score-date-area {
+            font-size: 13px;
+            font-weight: bold;
+            color: #e65100;
+            background: #ffe0b2;
+            padding: 5px 12px;
+            border-radius: 50px;
+            flex-shrink: 0;
+            margin: 0 0 0 10px !important; /* 「だい〇もん」のすぐ右隣に綺麗に並ぶ余白 */
+            position: static !important;
+            transform: none !important;
+        }
+        
+        .score-gauge-wrapper {
+            display: flex !important;
+            align-items: center;
+            gap: 10px;
+            
+            /* 真ん中の余ったスペースをすべて使って、メーターを美しく長く広げる指定 */
+            flex-grow: 1;
+            margin: 0 25px; 
+            position: static !important;
+        }
+
+        .score-radika-icon {
+            /* ⚠️ 変更：サイズを 40px から「50px」へ大きく拡大します！ */
+            width: 50px !important;
+            height: auto !important;
+            flex-shrink: 0;
+            display: block !important;
+            position: static !important;
+            animation: score-radika-bounce 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes score-radika-bounce {
+            0% { transform: translateY(0) rotate(-3deg); }
+            100% { transform: translateY(-3px) rotate(3deg); }
+        }
+        
+        /* ⚠️ 他の要素の干渉を100%受け付けない無敵のロングバー */
+        .score-gauge-outer {
+            background: #eeeeee !important;
+            border: 3px solid #ff9800 !important;
+            border-radius: 50px !important;
+            height: 22px !important;
+            overflow: hidden !important;
+            position: relative !important;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important;
+            
+            /* ⚠️ 変更：横幅を100%広げるのをやめ、最大幅を「180px」に制限してキュッと引き締めます */
+            flex-grow: 1;
+            max-width: 180px !important;
+            width: auto !important;
+            display: block !important;
+        }
+
+        .score-gauge-inner {
+            background: linear-gradient(90deg, #ffb74d, #ff9800) !important;
+            height: 100% !important;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .score-count-area {
+            font-size: 15px;
+            font-weight: bold;
+            color: #2e7d32;
+            background: #e8f5e9;
+            border: 2px solid #a5d6a7;
+            padding: 5px 14px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            min-width: 95px;
+            text-align: center;
+            margin: 0 !important;
+            position: static !important;
+            transform: none !important;
+        }
+
+
   </style>
 </head>
 
@@ -816,9 +924,9 @@ h1 {
       <select id="debug-question-select" onchange="selectTestQuestion(this.value)" style="padding: 6px; font-size: 14px; border-radius: 6px; border: 2px solid #007bff; margin-left: 10px; cursor: pointer; max-width: 70%;">
           <option value="">-- 問題を選んでテスト（またはスタート画面へ） --</option>
       </select>
+         <!-- 🛠️ テスト用のリセットボタンを追加 -->
+        <button onclick="resetScoreForTest()" style="padding: 6px 12px; font-size: 14px; border-radius: 6px; border: 2px solid #f44336; background: #ffebee; color: #f44336; font-weight: bold; margin-left: 10px; cursor: pointer;">メーターをリセット</button>
   </div>
-
-
   <!-- スタート画面（修正版） -->
   <div id="start-screen">
     <!-- タイトルをテキストからロゴ画像に変更 -->
@@ -849,7 +957,28 @@ h1 {
     <div style="margin-top: 10px; margin-bottom: 10px;">
         <img src="logo.png" alt="ドッカイズ! ロゴ" style="max-width: 300px; width: 100%; height: auto;">
     </div>
-    <div id="progress" class="progress-text">データをよみこみ中... </div>
+
+    <!-- 🎯 【ここへ移動！】得点表示ボード -->
+        <div id="score-board" class="score-board-container" style="display: none;">
+            <!-- 進行状況バッジ -->
+            <div id="progress" class="progress-text">データをよみこみ中...</div>
+            
+            <!-- 日付表示エリア -->
+            <div id="score-date" class="score-date-area">0がつ0にち</div>
+            
+            <!-- ラジカくんアイコン（独立配置） -->
+            <img src="radika_meter.png" alt="ラジカくん" class="score-radika-icon" style="width: 75px !important; height: 75px !important; object-fit: contain !important; display: block !important; margin-top: -15px !important; position: relative !important; z-index: 50 !important;">
+            
+            <!-- ゲージ本体（他の要素と切り離し、単独で横幅を絶対保持させる） -->
+            <div id="score-gauge-main-outer" class="score-gauge-outer">
+                <div id="score-gauge-bar" class="score-gauge-inner"></div>
+            </div>
+            
+            <!-- 正解カウントエリア -->
+            <div id="score-count" class="score-count-area">せいかい: 0点</div>
+        </div>
+
+
     <h1 id="question-text">読み込み中... </h1>
 
     <!-- ★ここに content-wrapper を移動（問題文の下から囲むことで、スタート画面での露出を100%防ぎます） -->
@@ -858,27 +987,23 @@ h1 {
         <div id="quiz-container" class="quiz-container"></div>
     </div>
 
-    <!--大改善: ボタンをすべて内包した中央ポップアップエリア -->
+    <!--大改善:ボタンをすべて内包した中央ポップアップエリア -->
     <div id="result-box" class="result-message" style="display: none;">
-        <!-- ラジカくんのイラストやメッセージがここに入ります -->
-        <div id="result-content"></div>
-        
-        <!-- ポップアップ専用の操作ボタンエリア -->
-        <div class="modal-buttons">
-            <button id="retry-button" class="action-btn retry-layout" style="display: none;" onclick="closeModal()">もういちど 考える</button>
-            <button id="next-button" class="action-btn next-layout" style="display: none;" onclick="nextQuestion()">つぎの もんだいへ ➔</button>
-        </div>
+        <!-- ⚠️ ここにラジカくんのアバター画像を正規パーツとして配置します -->
+        <img id="radika-avatar" src="radika.png" alt="ラジカくん" style="display: none;">
+            <!-- メッセージがここに入ります -->
+            <div id="result-content"></div>
+            <!-- ポップアップ専用の操作ボタンエリア -->
+            <div class="modal-buttons">
+                <button id="retry-button" class="action-btn retry-layout" style="display: none;" onclick="closeModal()">もういちど考える</button>
+                <button id="next-button" class="action-btn next-layout" style="display: none;" onclick="nextQuestion()">つぎのもんだいへ ➔</button>
+            </div>
     </div>
+
 
     <div>
       <button id="next-button" class="next-btn" onclick="nextQuestion()">つぎの問題へ ➔</button>
     </div>
-
-    <!-- 💡 ラジカくんの画像だけを表示するシンプルな枠組みに書き換えます -->
-    <div class="radika-standalone-container">
-      <img id="radika-avatar" class="radika-standalone-img" src="radika.png" alt="ラジカくん">
-    </div>
-
   </div>
 
 
@@ -1043,34 +1168,36 @@ h1 {
         document.getElementById('quiz-screen').classList.remove('hidden');
         currentQuestionIndex = 0;
         loadQuestion();
+
+        // ★ クイズが始まったのでメーターを画面に表示する
+        document.getElementById('score-board').style.display = 'flex';
+
     }
 
-  async function initApp() {
-      try {
-          // 1. 元々の quiz.json を読み込む
-          const response = await fetch('quiz.json');
-          if (!response.ok) throw new Error('JSONファイルの読み込みに失敗しました');
-          const jsonQuestions = await response.json();
-
-          // 2. LocalStorage の追加問題を読み込む
-          const localQuestionsData = localStorage.getItem('dockais_added_questions');
-          const localQuestions = localQuestionsData ? JSON.parse(localQuestionsData) : [];
-
-          // 3. スプレッド演算子「...」でフラットに合体してバグを解消
-          allQuizData = [...jsonQuestions, ...localQuestions];
-
-          console.log('データの読み込みが完了しました! 問題数:', allQuizData.length);
-          
-          // 🛠️ データが揃ったので、メニューの選択肢をここで起動
-          createDebugMenu();
-
-      } catch (error) {
-          console.error(error);
-          document.getElementById('question-text').innerText = 'エラー: もんだいデータが よみこめませんでした。';
-      }
-      // 💡【追加】初期化の最後に、クイズ画面を確実に隠してスタート画面だけを残す！
-      document.getElementById('quiz-screen').classList.add('hidden'); 
-  }
+    /**
+     * アプリ起動時の初期化処理（得点板起動連動・完全版）
+     */
+    async function initApp() {
+        try {
+            const response = await fetch('quiz.json');
+            if (!response.ok) throw new Error('JSONファイルの読み込みに失敗しました');
+            const jsonQuestions = await response.json();
+            
+            const localQuestionsData = localStorage.getItem('dockais_added_questions');
+            const localQuestions = localQuestionsData ? JSON.parse(localQuestionsData) : [];
+            
+            allQuizData = [...jsonQuestions, ...localQuestions];
+            createDebugMenu();
+            
+            // ★得点用：起動時に日付チェックとメーター更新を実行
+            updateAndCheckScoreBoard();
+            
+            document.getElementById('quiz-screen').classList.add('hidden');
+        } catch (error) {
+            console.error(error);
+            document.getElementById('question-text').innerText = 'エラー: もんだいデータがよみこめませんでした。';
+        }
+    }
 
 
 
@@ -1208,77 +1335,60 @@ h1 {
 
 
     // 💡 txtファイルの読み込み（fetch）がなくなり、一瞬で画面が切り替わる安全な関数に進化しました（画像回り込みバグ完全修正版）
+    /**
+     * 問題データの読み込み表示（得点リセット連動・完全版）
+     */
     function loadQuestion() {
         if (currentPlayQuestions.length == 0) return;
         const currentQuiz = currentPlayQuestions[currentQuestionIndex];
         
-        // 1. ヘッダー情報のセット
+        // ★得点用：新しい問題になったので挑戦ミス回数を0リセット
+        currentQuestionAttempts = 0;
+        
         document.getElementById('progress').innerText = `だい ${currentQuestionIndex + 1} もん / ぜん ${currentPlayQuestions.length} もん`;
         
-        // 2. 問題文指示テキストをインテリジェントタッチハイライト仕様で表示
         renderInteractiveQuestion(currentQuiz.questionText);
         
-        // 3. 不正解時のヒントの記録
         currentHints.hint1 = currentQuiz.hint1 || "よくよんでみよう！";
         currentHints.hint2 = currentQuiz.hint2 || "もういちどチャレンジ！";
         
-        // 4. UI表示状態のリセット
-        document.getElementById('next-button').style.display = 'none';
-        const resultBox = document.getElementById('result-box');
-        resultBox.style.display = 'none';
-        resultBox.className = 'result-message';
-        
-        // 5. メイン画像エリアの構築（古い画像コンテナがあれば確実に削除して新設）
         let existingImgContainer = document.querySelector('.main-image-container');
-        if (existingImgContainer) {
-            existingImgContainer.remove();
-        }
+        if (existingImgContainer) existingImgContainer.remove();
         
         if (currentQuiz.questionImage) {
             const mainImgContainer = document.createElement('div');
             mainImgContainer.className = 'main-image-container';
             mainImgContainer.innerHTML = `<img src="${currentQuiz.questionImage}" alt="もんだいのえ">`;
             
-            // 💡 解決のポイント：問題文（#question-text）の中ではなく、その下にある専用の外枠（.content-wrapper）の先頭に画像を確実に挿入！
-            // これにより、ハイライトされた文章が画像の回り込みによって引き裂かれるバグが100%完全に消滅します。
             const wrapper = document.querySelector('.content-wrapper');
-            if (wrapper) {
-                wrapper.insertBefore(mainImgContainer, wrapper.firstChild);
-            }
+            if (wrapper) wrapper.insertBefore(mainImgContainer, wrapper.firstChild);
         }
         
-        // 6. 選択肢コンテナのクリア
         const container = document.getElementById('quiz-container');
         container.innerHTML = '';
         
-        // 7. 選択肢配列の安全な取得
         let choices = [];
         if (Array.isArray(currentQuiz.choices)) {
             choices = [...currentQuiz.choices];
         } else if (currentQuiz.choices && typeof currentQuiz.choices === 'object') {
             choices = [
                 { text: currentQuiz.choices.correct, isCorrect: true, type: 'correct' },
-                { text: currentQuiz.choices.wrong1, isCorrect: false, type: 'hint1' },
+                { text: currentQuiz.choices.wrong, isCorrect: false, type: 'hint1' },
                 { text: currentQuiz.choices.wrong2, isCorrect: false, type: 'hint2' }
             ];
         }
         
-        // 8. 選択肢のシャッフル
         const shuffledChoices = [...choices];
         for (let i = shuffledChoices.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [shuffledChoices[i], shuffledChoices[j]] = [shuffledChoices[j], shuffledChoices[i]];
         }
         
-        // 9. テキスト選択肢カードの生成と配置
         shuffledChoices.forEach((choice, index) => {
             const card = document.createElement('div');
             card.className = 'image-card';
             card.onclick = function () { checkAnswer(choice, this); };
-            
-            // 改行コード（\n）をHTMLの改行に自動変換
             const formattedText = choice.text.replace(/\n/g, '<br>');
-            
             card.innerHTML = `
                 <div class="card-text">${formattedText}</div>
                 <div class="label">せんたくし ${index + 1}</div>
@@ -1295,139 +1405,172 @@ h1 {
 
     // 🚀 大改善：音声・アバター処理を維持したまま、ボタン内包＆閉じる機能を追加
     function checkAnswer(choice, cardElement) {
-      if (cardElement.classList.contains('correct-anim') || cardElement.classList.contains('wrong-anim')) {
-        return;
-      }
+        if (cardElement.classList.contains('correct-anim') || cardElement.classList.contains('wrong-anim')) {
+            return;
+        }
+        const resultBox = document.getElementById('result-box');
+        const radikaAvatar = document.getElementById('radika-avatar'); 
+        const retryButton = document.getElementById('retry-button');
+        const nextButton = document.getElementById('next-button');
 
-      const resultBox = document.getElementById('result-box');
-      const radikaAvatar = document.getElementById('radika-avatar'); 
-      const retryButton = document.getElementById('retry-button');
-      const nextButton = document.getElementById('next-button');
+        // 最初にボタンとヒント文の表示状況を一度リセット
+        if (retryButton) retryButton.style.display = 'none';
+        if (nextButton) nextButton.style.display = 'none';
+        
+        let existingHint = resultBox.querySelector('.dynamic-hint-text');
+        if (existingHint) existingHint.remove();
 
-      // 最初にボタンの表示状況をリセット
-      if (retryButton) retryButton.style.display = 'none';
-      if (nextButton) nextButton.style.display = 'none';
+        if (choice.isCorrect) {
+            // 【正解のときの処理】
+            cardElement.classList.add('correct-anim');
+        
+            // ----------------------------------------------------
+            // ★ 得点機能の計算処理 (❹ 得点ルール)
+            // ----------------------------------------------------
+            let pointsEarned = 0;
+        
+            if (currentQuestionAttempts === 0) {
+                // 1度で正解：3ポイント
+                pointsEarned = 3;
+            } else if (currentQuestionAttempts === 1) {
+                // 1度不正解の後に正解：1ポイント（ただし1日3回まで）
+                let todayRetryCount = parseInt(localStorage.getItem('dockais_retry_bonus_today') || '0');
+                if (todayRetryCount < 3) {
+                    pointsEarned = 1;
+                    localStorage.setItem('dockais_retry_bonus_today', String(todayRetryCount + 1));
+                } else {
+                    pointsEarned = 0; // 4回目以降は0ポイント
+                }
+            } else {
+                // 2度以上不正解の後に正解：0ポイント
+                pointsEarned = 0;
+            }
 
-      if (radikaAvatar) {
-        radikaAvatar.classList.remove('radika-happy', 'radika-shock');
-      }
+            // データの加算と保存
+            let currentTotalScore = parseInt(localStorage.getItem('dockais_total_score') || '0');
+            let currentCorrectCount = parseInt(localStorage.getItem('dockais_correct_count') || '0');
+        
+            localStorage.setItem('dockais_total_score', String(currentTotalScore + pointsEarned));
+            localStorage.setItem('dockais_correct_count', String(currentCorrectCount + 1));
+        
+            // メーターと数字を画面に即時反映
+            updateAndCheckScoreBoard();
 
-      if (choice.isCorrect) {
-        // 【正解のときの処理】
-        cardElement.classList.add('correct-anim');
+            // 🔊 音声を再生
+            correctSound.currentTime = 0;
+            correctSound.play();
 
-        if (radikaAvatar) {
-          radikaAvatar.src = 'radika_correct.png';
-          radikaAvatar.classList.add('radika-happy');
+            // 💡 安全な中身の差し替え
+            resultBox.className = 'result-message result-correct';
+            
+            const textContentEl = document.getElementById('result-content');
+            if (textContentEl) {
+                textContentEl.innerHTML = `<div class="result-text" style="color: #4caf50 !important; font-size: 26px; font-weight: bold; margin-bottom: 10px;">🎉 せいかい！よくよめたね！</div>`;
+            }
+            
+            if (radikaAvatar) {
+                radikaAvatar.src = 'radika_correct.png';
+                radikaAvatar.className = 'radika-happy';
+                radikaAvatar.style.display = 'block';
+            }
+            
+            if (nextButton) nextButton.style.display = 'block';
+            
+        } else {
+            // 【不正解のときの処理】
+            cardElement.classList.add('wrong-anim');
+            currentQuestionAttempts++; // ★ミスカウントを増やす
+
+            // 🔊 音声を再生
+            wrongSound.currentTime = 0;
+            wrongSound.play();
+
+            resultBox.className = 'result-message result-wrong';
+        
+            // 選択肢のタイプに合わせて、記録していたヒントを取得
+            const targetHint = choice.type === 'hint1' ? currentHints.hint1 : currentHints.hint2;
+            
+            // 💡 安全な中身の差し替え
+            const textContentEl = document.getElementById('result-content');
+            if (textContentEl) {
+                textContentEl.innerHTML = `
+                    <div class="result-text" style="color: #f44336 !important; font-size: 24px; font-weight: bold; margin-bottom: 10px;">❌ ざんねん！もういちどよくよんでみよう！</div>
+                    <p class="dynamic-hint-text" style="font-size: 16px; font-weight: bold; color: #555; margin: 6px 0; padding: 0 15px; line-height: 1.4;">${targetHint}</p>
+                `;
+            }
+            
+            if (radikaAvatar) {
+                radikaAvatar.src = 'radika_wrong.png';
+                radikaAvatar.className = 'radika-shock';
+                radikaAvatar.style.display = 'block';
+            }
+
+            if (retryButton) retryButton.style.display = 'block';
+
+            // 震えるアニメーションの自動解除
+            setTimeout(() => {
+                cardElement.classList.remove('wrong-anim');
+            }, 400);
         }
 
-        // 🔊 音声を再生
-        correctSound.currentTime = 0;
-        correctSound.play();
-
-        resultBox.className = 'result-message result-correct';
-        
-        // 💡 骨組みの中身を構築（アバター画像エリアの下にテキストと次の問題ボタンを配置）
-        resultBox.innerHTML = `
-            <div class="result-text" style="color: #4caf50 !important; font-size: 26px; font-weight: bold; margin-bottom: 10px;">🎉 せいかい！よくよめたね！</div>
-            <img id="radika-avatar" src="radika_correct.png" class="radika-happy" style="width: 130px; height: auto; margin-bottom: 12px;">
-            <div class="modal-buttons">
-                <button id="next-button" class="action-btn next-layout" onclick="nextQuestion()">つぎの もんだいへ ➔</button>
-            </div>
-        `;
-      } else {
-        // 【不正解のときの処理】
-        cardElement.classList.add('wrong-anim');
-
-        if (radikaAvatar) {
-          radikaAvatar.src = 'radika_wrong.png';
-          radikaAvatar.classList.add('radika-shock');
-        }
-
-        // 🔊 音声を再生
-        wrongSound.currentTime = 0;
-        wrongSound.play();
-
-        resultBox.className = 'result-message result-wrong';
-    
-        // 選択肢のタイプに合わせて、記録していたヒントを取得
-        const targetHint = choice.type === 'hint1' ? currentHints.hint1 : currentHints.hint2;
-        
-        // 💡 骨組みの中身を構築（ヒントを表示し、もう一度考えるボタンを配置）
-        resultBox.innerHTML = `
-            <div class="result-text" style="color: #f44336 !important; font-size: 24px; font-weight: bold; margin-bottom: 10px;">❌ ざんねん！もういちどよくよんでみよう！</div>
-            <img id="radika-avatar" src="radika_wrong.png" class="radika-shock" style="width: 110px; height: auto; margin-bottom: 12px;">
-            <p style="font-size: 16px; font-weight: bold; color: #555; margin: 6px 0; padding: 0 15px; line-height: 1.4;">${targetHint}</p>
-            <div class="modal-buttons">
-                <button id="retry-button" class="action-btn retry-layout" onclick="closeModal()">もういちど 考える</button>
-            </div>
-        `;
-
-        // 震えるアニメーションの自動解除（元のコードのロジックを維持）
-        setTimeout(() => {
-          cardElement.classList.remove('wrong-anim');
-        }, 400);
-      }
-
-      // 画面中央のポップアップとして表示
-      resultBox.style.display = 'flex';
+        // 画面中央のポップアップとして表示
+        resultBox.style.display = 'flex';
     }
+
+
+
 
     // 🚀 不正解ダイアログを一瞬で閉じるための新しい関数（checkAnswerの下に追記してください）
     function closeModal() {
       document.getElementById('result-box').style.display = 'none';
     }
 
-    function nextQuestion() {      
-      currentQuestionIndex++;
-      const radikaAvatar = document.getElementById('radika-avatar');
-
-      if (radikaAvatar) {
-        radikaAvatar.classList.remove('radika-happy', 'radika-shock');
-      }
-
-      if (currentQuestionIndex < currentPlayQuestions.length) {
-        loadQuestion();
-        
-        // 💡 安全装置：triggerSlideAnimation が定義されていない場合でもエラーで止まらないようにする
-        if (typeof triggerSlideAnimation === 'function') {
-          triggerSlideAnimation();
-        } else {
-          // 関数がない場合は、クイズコンテナに直接アニメーションクラスを付与する
-          const container = document.getElementById('quiz-container');
-          if (container) {
-            container.classList.remove('slide-in');
-            void container.offsetWidth; // 画面を強制再描画させてアニメーションをリセット
-            container.classList.add('slide-in');
-          }
-        }
-        
-        if (radikaAvatar) radikaAvatar.src = 'radika.png';
-      } else {
-        // 🚀 【大改善】全問クリア画面が出る瞬間に、手前で邪魔をしていた正解ダイアログを強制的に消し去る！
+    function nextQuestion() {
+        // ⚠️ 連続表示バグの根本原因を完全撃破！
+        // 「つぎのもんだいへ」が押された瞬間に、手前にある正解ダイアログ（枠）を100%確実に非表示にします。
         const resultBox = document.getElementById('result-box');
         if (resultBox) {
-          resultBox.style.display = 'none';
+            resultBox.style.display = 'none';
         }
 
-        const clearModal = document.getElementById('clear-modal');
-        if (clearModal) {
-          clearModal.style.display = 'flex';
+        currentQuestionIndex++;
+        const radikaAvatar = document.getElementById('radika-avatar');
+        if (radikaAvatar) {
+            radikaAvatar.classList.remove('radika-happy', 'radika-shock');
         }
-        
-        try {
-          if (radikaAvatar) radikaAvatar.src = 'radika_complete.png';
-        } catch(e) { console.error(e); }
-        
-        try {
-          if (typeof fanfareSound !== 'undefined' && fanfareSound) {
-            fanfareSound.currentTime = 0;
-            fanfareSound.play();
-          }
-        } catch(e) { console.error(e); }
-        
-        startStarShower();
-      }
+
+        if (currentQuestionIndex < currentPlayQuestions.length) {
+            loadQuestion();
+            
+            // 安全装置: アニメーション処理
+            if (typeof triggerSlideAnimation === 'function') {
+                triggerSlideAnimation();
+            } else {
+                const container = document.getElementById('quiz-container');
+                if (container) {
+                    container.classList.remove('slide-in');
+                    void container.offsetWidth; // 画面を強制再描画させてリセット
+                    container.classList.add('slide-in');
+                }
+            }
+            if (radikaAvatar) radikaAvatar.src = 'radika.png';
+        } else {
+            // 【全問クリア時】クリアモーダル（星のシャワー）を出す瞬間にダイアログを確実に消す
+            const clearModal = document.getElementById('clear-modal');
+            if (clearModal) {
+                clearModal.style.display = 'flex';
+                try {
+                    if (radikaAvatar) radikaAvatar.src = 'radika_complete.png';
+                } catch(e) { console.error(e); }
+                try {
+                    if (typeof fanfareSound !== 'undefined' && fanfareSound) {
+                        fanfareSound.currentTime = 0;
+                        fanfareSound.play();
+                    }
+                } catch(e) { console.error(e); }
+                startStarShower();
+            }
+        }
     }
 
 
@@ -1498,6 +1641,9 @@ h1 {
         
         startScreen.classList.remove('hidden');
         startScreen.style.display = 'flex'; // または 'block' (スタート画面のCSSに合わせる)
+
+        // ★ タイトルに戻ったのでメーターを隠す
+        document.getElementById('score-board').style.display = 'none';
       }
       
       // 6. 🚀【超安全対策】CSSの優先順位を無視し、ボディの背景色を元の淡いオレンジ（スタート画面の色）へ強制リセット！
@@ -1662,12 +1808,84 @@ h1 {
       
       reader.readAsText(file);
     }
+
+
+
+    // ========================================================
+    // 得点機能用：新しく追加したグローバル変数
+    // ========================================================
+    let currentQuestionAttempts = 0; // 現在の問題の回答ミス回数
+
+    /**
+     * 🎯 スコアボードの更新と日付自動リセットロジック
+     */
+    function updateAndCheckScoreBoard() {
+        const now = new Date();
+        const currentMonth = now.getMonth() + 1;
+        const currentDate = now.getDate();
+        const dateStr = `${currentMonth}がつ${currentDate}にち`;
+        
+        const dateEl = document.getElementById('score-date');
+        if (dateEl) dateEl.innerText = dateStr;
+
+        const todayKey = `${now.getFullYear()}-${currentMonth}-${currentDate}`;
+        const savedDateKey = localStorage.getItem('dockais_score_date_key');
+        
+        // 0時を跨いだらデータを全自動リセット
+        if (savedDateKey !== todayKey) {
+            localStorage.setItem('dockais_score_date_key', todayKey);
+            localStorage.setItem('dockais_total_score', '0');
+            localStorage.setItem('dockais_correct_count', '0');
+            localStorage.setItem('dockais_retry_bonus_today', '0');
+        }
+
+        let totalScore = parseInt(localStorage.getItem('dockais_total_score') || '0');
+        let correctCount = parseInt(localStorage.getItem('dockais_correct_count') || '0');
+
+        if (correctCount > 99) correctCount = 99;
+
+        let gaugePercentage = (totalScore / 10) * 100;
+        if (gaugePercentage > 100) gaugePercentage = 100;
+
+        const gaugeBar = document.getElementById('score-gauge-bar');
+        if (gaugeBar) gaugeBar.style.width = `${gaugePercentage}%`;
+
+        // 保険パッチ：プログラム側からも外枠が縮まないようにスタイルを強制固定
+        const gaugeOuterEl = document.getElementById('score-gauge-main-outer');
+        if (gaugeOuterEl) {
+            gaugeOuterEl.style.setProperty('display', 'block', 'important');
+        }
+
+        const countEl = document.getElementById('score-count');
+        if (countEl) countEl.innerText = `せいかい: ${correctCount}点`;
+    }
+
+    /**
+     * 🛠️ テスト用：スコアデータを強制リセットしてメーターを0に戻す関数
+     */
+    function resetScoreForTest() {
+        if (confirm("今日のスコアとメーターを完全に0リセットしてもよろしいですか？")) {
+            localStorage.setItem('dockais_total_score', '0');
+            localStorage.setItem('dockais_correct_count', '0');
+            localStorage.setItem('dockais_retry_bonus_today', '0');
+            
+            // 画面のメーター表示を即座に0点（空っぽ）に更新
+            updateAndCheckScoreBoard();
+            alert("リセットしました！");
+        }
+    }
     
     window.onload = initApp;
   </script>
 
 
-  <!-- クリアポップアップの枠枠 -->
+  <!-- クリアポップアップの枠 -->
+
+    <!-- 💡 ラジカくんの画像だけを表示するシンプルな枠組みに書き換えます -->
+    <div class="radika-standalone-container">
+      <img id="radika-avatar" class="radika-standalone-img" src="radika.png" alt="ラジカくん">
+    </div>
+
   <div id="clear-modal" class="clear-modal">
     <div class="clear-content">
       <div class="clear-icon">🏆</div>
