@@ -1026,28 +1026,24 @@ h1 {
 
         <!-- 🎯 メーターの長さは130pxを完全維持！左側を引き締めてはみ出しを完全解決する構造 -->
         <div id="score-board" class="score-board-container" style="display: flex !important; align-items: center !important; justify-content: space-between !important; background: #ffffff !important; border: 3px solid #ffcc80 !important; border-radius: 20px !important; padding: 4px 12px !important; margin: 10px auto !important; max-width: 960px !important; width: 100% !important; height: 50px !important; box-sizing: border-box !important; box-shadow: 0 4px 0 #ffe0b2 !important; grid-column: 1 / 2 !important; grid-row: 1 / 2 !important; position: relative !important;">
-            
-            <!-- 左側エリア：文字をハッキリ残したまま、余白を極限までスリム化してスペースを生み出す -->
-            <div style="display: flex !important; align-items: center !important; gap: 4px !important; flex-shrink: 0 !important;">
-                <!-- 進行状況バッジ（paddingを少し狭めて引き締め） -->
-                <div id="progress" class="progress-text" style="display: inline-block !important; font-size: 12px !important; font-weight: bold !important; color: #fff !important; background-color: #ff9800 !important; padding: 5px 8px !important; border-radius: 50px !important; box-shadow: 0 3px 0 #e65100 !important; text-align: center !important; margin: 0 !important; position: static !important; transform: none !important;">データをよみこみ中...</div>
-                <!-- 日付表示エリア（paddingを少し狭めて引き締め） -->
-                <div id="score-date" class="score-date-area" style="font-size: 12px !important; font-weight: bold !important; color: #e65100 !important; background: #ffe0b2 !important; padding: 4px 8px !important; border-radius: 50px !important; margin: 0 !important; position: static !important; transform: none !important;">0がつ0にち</div>
-            </div>
-
-            <!-- 中央エリア：ラジカくんと、こだわり抜いた大満足の「130pxロングメーター」を完全死守！ -->
-            <div style="display: flex !important; align-items: center !important; gap: 6px !important; margin-left: 6px !important; margin-right: auto !important; flex-shrink: 0 !important;">
-                <!-- ラジカくん -->
-                <img src="radika.png" alt="ラジカくん" class="score-radika-icon" style="width: 75px !important; height: 75px !important; object-fit: contain !important; display: block !important; margin-top: -15px !important; position: relative !important; z-index: 50 !important; flex-shrink: 0 !important;">
-                <!-- メーター本体（大迫力の130px固定サイズを1ミリも縮めずにキープ） -->
-                <div id="score-gauge-main-outer" style="background: #eeeeee !important; border: 3px solid #ff9800 !important; border-radius: 50px !important; height: 22px !important; width: 180px !important; min-width: 180px !important; max-width: 180px !important; overflow: hidden !important; position: relative !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important; z-index: 10 !important; flex-shrink: 0 !important; display: block !important;">
-                    <div id="score-gauge-bar" class="score-gauge-inner"></div>
-                    <div id="score-gauge-text" style="position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #ffffff !important; font-size: 11px !important; font-weight: 900 !important; font-family: Arial, sans-serif !important; text-shadow: 1px 1px 0px #332200, -1px 1px 0px #332200, 1px -1px 0px #332200, -1px -1px 0px #332200, 1px 1px 2px rgba(0,0,0,0.8) !important; z-index: 15 !important; pointer-events: none !important;">0 / 10</div>
-                </div>
-            </div>
-
-            <!-- 右側エリア：左側がスリムになったおかげで、はみ出さずにすっぽり収まるようになった緑バッジ -->
-            <div id="score-count" class="score-count-area" style="font-size: 13px !important; font-weight: bold !important; color: #2e7d32 !important; background: #e8f5e9 !important; border: 2px solid #a5d6a7 !important; padding: 5px 8px !important; border-radius: 12px !important; flex-shrink: 0 !important; width: auto !important; min-width: 0px !important; max-width: none !important; text-align: center !important; margin: 0 !important; position: static !important; transform: none !important;">せいかい: 0点</div>
+                    
+                    <!-- ① 進行状況バッジ -->
+                    <div id="progress" class="progress-text" style="display: inline-block !important; font-size: 12px !important; font-weight: bold !important; color: #fff !important; background-color: #ff9800 !important; padding: 5px 8px !important; border-radius: 50px !important; box-shadow: 0 3px 0 #e65100 !important; text-align: center !important; margin: 0 !important; position: static !important; transform: none !important; flex-shrink: 0 !important;">データをよみこみ中...</div>
+                    
+                    <!-- ② 日付表示エリア -->
+                    <div id="score-date" class="score-date-area" style="font-size: 12px !important; font-weight: bold !important; color: #e65100 !important; background: #ffe0b2 !important; padding: 4px 8px !important; border-radius: 50px !important; margin: 0 0 0 4px !important; position: static !important; transform: none !important; flex-shrink: 0 !important;">0がつ0にち</div>
+                    
+                    <!-- ③ ラジカくんアイコン -->
+                    <img src="radika.png" alt="ラジカくん" class="score-radika-icon" style="width: 75px !important; height: 75px !important; object-fit: contain !important; display: block !important; margin-top: -15px !important; position: relative !important; z-index: 50 !important; flex-shrink: 0 !important; margin-left: 6px !important;">
+                    
+                    <!-- ④ メーター本体 -->
+                    <div id="score-gauge-main-outer" style="background: #eeeeee !important; border: 3px solid #ff9800 !important; border-radius: 50px !important; height: 22px !important; flex-grow: 1 !important; overflow: hidden !important; position: relative !important; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1) !important; z-index: 10 !important; margin: 0 12px !important; display: block !important;">
+                        <div id="score-gauge-bar" class="score-gauge-inner"></div>
+                        <div id="score-gauge-text" style="position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #ffffff !important; font-size: 11px !important; font-weight: 900 !important; font-family: Arial, sans-serif !important; text-shadow: 1px 1px 0px #332200, -1px 1px 0px #332200, 1px -1px 0px #332200, -1px -1px 0px #332200, 1px 1px 2px rgba(0, 0, 0, 0.8) !important; z-index: 15 !important; pointer-events: none !important;">0 / 10</div>
+                    </div>
+                    
+                    <!-- ⑤ 右端の正解バッジ -->
+                    <div id="score-count" class="score-count-area" style="font-size: 13px !important; font-weight: bold !important; color: #2e7d32 !important; background: #e8f5e9 !important; border: 2px solid #a5d6a7 !important; padding: 5px 8px !important; border-radius: 12px !important; flex-shrink: 0 !important; width: auto !important; min-width: 0px !important; max-width: none !important; text-align: center !important; margin: 0 0 0 auto !important; position: static !important; transform: none !important;">せいかい: 0点</div>
 
         </div>
 
@@ -1906,12 +1902,15 @@ h1 {
         const currentDate = now.getDate();
         const dateStr = `${currentMonth}がつ${currentDate}にち`;
         
-        const dateEl = document.getElementById('score-date');
-        if (dateEl) dateEl.innerText = dateStr;
-        
+        // 🛠️ 解決①：画面内にあるすべての「id="score-date"」を一括で本日の日付に変えます
+        document.querySelectorAll('#score-date').forEach(el => {
+            el.innerText = dateStr;
+        });
+
         const todayKey = `${now.getFullYear()}-${currentMonth}-${currentDate}`;
         const savedDateKey = localStorage.getItem('dockais_score_date_key');
         
+        // 誤作動防止安全装置
         if (!savedDateKey) {
             localStorage.setItem('dockais_score_date_key', todayKey);
         } else if (savedDateKey !== todayKey) {
@@ -1929,37 +1928,35 @@ h1 {
         let gaugePercentage = (totalScore / 10) * 100;
         if (gaugePercentage > 100) gaugePercentage = 100;
 
-        const gaugeBar = document.getElementById('score-gauge-bar');
-        if (gaugeBar) gaugeBar.style.width = `${gaugePercentage}%`;
+        // 🛠️ 解決②：画面内にあるすべての「id="score-gauge-bar"」を一括で伸ばし、3色カラーを連動させます
+        document.querySelectorAll('#score-gauge-bar').forEach(bar => {
+            bar.style.width = `${gaugePercentage}%`;
+            bar.innerText = ""; // 古い中身の文字を消去
+            bar.classList.remove('gauge-medium', 'gauge-max');
+            if (totalScore >= 10) bar.classList.add('gauge-max');
+            else if (totalScore >= 4) bar.classList.add('gauge-medium');
+        });
 
-        const gaugeTextEl = document.getElementById('score-gauge-text');
-        if (gaugeTextEl) {
-            gaugeTextEl.innerText = `${totalScore} / 10`;
-        }
+        // 🛠️ 解決③：画面内にあるすべての「id="score-gauge-text"」の一括書き換え（0/10表示）
+        document.querySelectorAll('#score-gauge-text').forEach(textEl => {
+            textEl.innerText = `${totalScore} / 10`;
+        });
 
-        // ⚠️ 構文エラーを完全修正：タイポをすべて消去し、正しい条件分岐に直しました！
-        if (gaugeBar) {
-            gaugeBar.classList.remove('gauge-medium', 'gauge-max');
-            document.getElementById('start-score-gauge-bar')?.classList.remove('gauge-medium', 'gauge-max');
-            
-            if (totalScore >= 10) {
-                gaugeBar.classList.add('gauge-max');
-                document.getElementById('start-score-gauge-bar')?.classList.add('gauge-max');
-            } else if (totalScore >= 4) {
-                gaugeBar.classList.add('gauge-medium');
-                document.getElementById('start-score-gauge-bar')?.classList.add('gauge-medium');
-            }
-        }
-
-        const countEl = document.getElementById('score-count');
-        if (countEl) {
+        // 🛠️ 解決④：画面内にあるすべての「id="score-count"」の一括書き換え（せいかい数バッジ）
+        document.querySelectorAll('#score-count').forEach(countEl => {
             countEl.innerHTML = `せいかい: <span style="font-weight: 900; color: #2e7d32;">${correctCount}もん</span>`;
             countEl.style.setProperty('min-width', '0px', 'important');
             countEl.style.setProperty('width', 'auto', 'important');
-            countEl.style.setProperty('padding', '5px 6px', 'important');
-        }
+            
+            // スタート画面側と問題画面側で、それぞれのパディング（余白）を美しく自動フィット
+            if (countEl.closest('#start-screen')) {
+                countEl.style.setProperty('padding', '4px 8px', 'important');
+            } else {
+                countEl.style.setProperty('padding', '5px 6px', 'important');
+            }
+        });
     }
-
+    
     /**
      * 🛠️ テスト用：スコアデータを強制リセットしてメーターを0に戻す関数
      */
