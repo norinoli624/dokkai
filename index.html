@@ -278,24 +278,30 @@ h1 {
 
   /* 正解画像エリア：文章の高さに合わせて、右側で綺麗に並ぶ自動伸縮構造 */
   #quiz-screen:not(.hidden) .main-image-container {
-    grid-column: 2 / 3 !important;
-    grid-row: 2 / 3 !important;
+    grid-column: 2/3 !important;
+    grid-row: 2/3 !important;
     width: 100% !important;
-    height: 100% !important;        /* 左側の問題文の高さと同期 */
-    min-height: 180px !important;   /* 画像が縮みすぎないための保険 */
+    height: 100% !important;
+    min-height: 180px !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     box-sizing: border-box !important;
-    align-self: start !important;   /* 上端を基準線にする */
-    /* 💡【最終調整】画像の大きさはそのまま、さらにしっかり下に「40px」下げて、問題文と上下中央のバランスを取ります */
-    margin: 40px 0 0 0 !important;  
+    align-self: start !important;
+    margin: 10px 0 0 0 !important; 
+    
+    /* 🛠️ 修正：画像の大きさに合わせて、外枠の器も「300px」にピッタリ同期させます */
+    max-height: 300px !important; 
   }
+
   #quiz-screen:not(.hidden) .main-image-container img {
     width: auto !important;
     height: auto !important;
     max-width: 100% !important;
-    max-height: 300px !important;   /* 子どもたちが見やすい大きな300pxサイズを維持 */
+    
+    /* ⭕ ご希望の、子どもたちが見やすい大きな300pxサイズを100%完全に維持します */
+    max-height: 300px !important;   
+    
     object-fit: contain !important;
     border: 3px solid #ffcc80 !important;
     border-radius: 12px !important;
@@ -815,13 +821,14 @@ h1 {
             background: #ffffff;
             border: 3px solid #ffcc80;
             border-radius: 20px;
-            
-            height: 70px !important; 
-            
-            padding: 4px 16px; /* 上下の内側の余白も少し詰めます */
+            height: 50px !important; 
+            padding: 4px 16px;
             margin: 10px auto !important;
             max-width: 960px;
-            width: 95%;
+            
+            /* ⚠️ 究極解決：横幅を 95% から「100%」へ広げ、左側のエリアの横幅限界まで看板を伸ばします！ */
+            width: 100% !important;
+            
             box-sizing: border-box;
             display: flex !important;
             align-items: center;
@@ -882,34 +889,75 @@ h1 {
             position: relative !important;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important;
             
-            /* ⚠️ 変更：横幅を100%広げるのをやめ、最大幅を「180px」に制限してキュッと引き締めます */
-            flex-grow: 1;
-            max-width: 180px !important;
+            /* ⚠️ 復活：横幅を自動で引き伸ばし、元の美しいロングサイズに戻す設定 */
+            flex-grow: 1 !important;
             width: auto !important;
+            max-width: none !important;
             display: block !important;
         }
 
+        /* 💎 初期状態：ネオンのように明るい「ルミナス水色」（0〜3点用） */
         .score-gauge-inner {
-            background: linear-gradient(90deg, #ffb74d, #ff9800) !important;
+            background: linear-gradient(90deg, #a0f0ff, #00d2ff) !important;
             height: 100% !important;
             width: 0%;
             transition: width 0.5s ease;
+            box-shadow: 0 0 6px rgba(0, 210, 255, 0.5);
+
+            /* ⚠️ 新機能：ゲージの中に文字を「上下左右中央」で美しく表示する命令 */
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff !important;
+            font-size: 11px !important;
+            font-weight: 900 !important;
+            font-family: Arial, sans-serif;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4); /* 文字を見やすくする影 */
+            white-space: nowrap !important;
+            overflow: visible !important; /* 0点に近いときも文字が潰れないお守り */
+        }
+
+        /* 🟢 4点〜9点のときに自動で切り替わる「ライム黄緑」 */
+        .score-gauge-inner.gauge-medium {
+            background: linear-gradient(90deg, #e0ff60, #40ff40) !important; /* 濁りのない、パッと明るい蛍光ライムグリーン */
+            box-shadow: 0 0 6px rgba(64, 255, 64, 0.5);
+        }
+
+        /* 🔴 10点（満タン）のときに自動で切り替わる「お祝いレインボーレッド」 */
+        .score-gauge-inner.gauge-max {
+            background: linear-gradient(90deg, #ff1744, #ff9100, #ffea00, #00e676, #00b0ff, #d500f9, #ff1744) !important;
+            background-size: 300% auto !important;
+            animation: rainbow-shine 2s linear infinite !important;
+            box-shadow: 0 0 12px #ff1744;
+        }
+
+        @keyframes rainbow-shine {
+            0% { background-position: 0% center; }
+            100% { background-position: 300% center; }
         }
 
         .score-count-area {
-            font-size: 15px;
+            font-size: 14px !important;
             font-weight: bold;
             color: #2e7d32;
             background: #e8f5e9;
             border: 2px solid #a5d6a7;
-            padding: 5px 14px;
+            padding: 5px 12px !important;
             border-radius: 12px;
             flex-shrink: 0;
-            min-width: 95px;
+            width: auto !important;
+            min-width: 0px !important;
+            max-width: none !important;
             text-align: center;
             margin: 0 !important;
-            position: static !important;
             transform: none !important;
+
+            /* ⚠️ 究極調整：Flexboxの並びから完全に独立させ、白い看板の「右端から12px」の位置へピタッと完全固定します！ */
+            position: absolute !important;
+            right: 12px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important; /* 上下中央ピッタリに合わせるお守り */
+            z-index: 20;
         }
 
 
@@ -934,7 +982,23 @@ h1 {
       <img src="logo.png" alt="ドッカイズ！" id="app-logo">
     </h1>
   
-    <p class="subtitle">えらんでね！</p>
+    <!-- p class="subtitle">えらんでね！</p -->
+
+    <!-- 🎯 最終解決版：看板全体の最大幅を「360px」に広げ、ゲージの長さを大迫力の「180px」に限界突破させた無敵のスタート画面メーター -->
+    <div id="start-score-board" class="score-board-container" style="margin: 0 auto 25px auto !important; max-width: 440px !important; width: 100% !important; display: flex !important; align-items: center !important; justify-content: space-between !important; background: #ffffff !important; border: 3px solid #ffcc80 !important; border-radius: 20px !important; padding: 4px 12px !important; box-sizing: border-box !important; box-shadow: 0 4px 0 #ffe0b2 !important; position: static !important; grid-column: auto !important; grid-row: auto !important;">
+      <!-- 日付表示 -->
+      <div id="start-score-date" class="score-date-area" style="font-size: 11px !important; padding: 4px 8px !important; margin: 0 !important; position: static !important; transform: none !important;">0がつ0にち</div>
+      <!-- メーターエリア（横幅を150pxから180pxへ超ロングサイズに限界突破！） -->
+      <div style="display: flex !important; align-items: center !important; gap: 4px !important; margin: 0 auto !important; flex-shrink: 0 !important; position: static !important;">
+        <div style="background: #eeeeee !important; border: 3px solid #ff9800 !important; border-radius: 50px !important; height: 20px !important; width: 180px !important; min-width: 180px !important; max-width: 180px !important; overflow: hidden !important; position: relative !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important; z-index: 10 !important; flex-shrink: 0 !important; display: block !important;">
+          <div id="start-score-gauge-bar" class="score-gauge-inner" style="height: 100% !important; width: 0%;"></div>
+          <div id="start-score-gauge-text" style="position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #ffffff !important; font-size: 10px !important; font-weight: 900 !important; font-family: Arial, sans-serif !important; text-shadow: 1px 1px 0px #332200, -1px 1px 0px #332200, 1px -1px 0px #332200, -1px -1px 0px #332200, 1px 1px 2px rgba(0,0,0,0.8) !important; z-index: 15 !important; pointer-events: none !important;">0 / 10</div>
+        </div>
+      </div>
+      <!-- 点数表示 -->
+      <div id="start-score-count" class="score-count-area" style="font-size: 12px !important; padding: 4px 6px !important; margin: 0 !important; position: static !important; transform: none !important;">せいかい: 0点</div>
+    </div>
+
   
     <div class="level-menu">
       <button class="level-btn lvl-1" onclick="startQuiz('1')">
@@ -958,25 +1022,33 @@ h1 {
         <img src="logo.png" alt="ドッカイズ! ロゴ" style="max-width: 300px; width: 100%; height: auto;">
     </div>
 
-    <!-- 🎯 【ここへ移動！】得点表示ボード -->
-        <div id="score-board" class="score-board-container" style="display: none;">
-            <!-- 進行状況バッジ -->
-            <div id="progress" class="progress-text">データをよみこみ中...</div>
+        <!-- 🎯 メーターの長さは130pxを完全維持！左側を引き締めてはみ出しを完全解決する構造 -->
+        <div id="score-board" class="score-board-container" style="display: flex !important; align-items: center !important; justify-content: space-between !important; background: #ffffff !important; border: 3px solid #ffcc80 !important; border-radius: 20px !important; padding: 4px 12px !important; margin: 10px auto !important; max-width: 960px !important; width: 100% !important; height: 50px !important; box-sizing: border-box !important; box-shadow: 0 4px 0 #ffe0b2 !important; grid-column: 1 / 2 !important; grid-row: 1 / 2 !important; position: relative !important;">
             
-            <!-- 日付表示エリア -->
-            <div id="score-date" class="score-date-area">0がつ0にち</div>
-            
-            <!-- ラジカくんアイコン（独立配置） -->
-            <img src="radika_meter.png" alt="ラジカくん" class="score-radika-icon" style="width: 75px !important; height: 75px !important; object-fit: contain !important; display: block !important; margin-top: -15px !important; position: relative !important; z-index: 50 !important;">
-            
-            <!-- ゲージ本体（他の要素と切り離し、単独で横幅を絶対保持させる） -->
-            <div id="score-gauge-main-outer" class="score-gauge-outer">
-                <div id="score-gauge-bar" class="score-gauge-inner"></div>
+            <!-- 左側エリア：文字をハッキリ残したまま、余白を極限までスリム化してスペースを生み出す -->
+            <div style="display: flex !important; align-items: center !important; gap: 4px !important; flex-shrink: 0 !important;">
+                <!-- 進行状況バッジ（paddingを少し狭めて引き締め） -->
+                <div id="progress" class="progress-text" style="display: inline-block !important; font-size: 12px !important; font-weight: bold !important; color: #fff !important; background-color: #ff9800 !important; padding: 5px 8px !important; border-radius: 50px !important; box-shadow: 0 3px 0 #e65100 !important; text-align: center !important; margin: 0 !important; position: static !important; transform: none !important;">データをよみこみ中...</div>
+                <!-- 日付表示エリア（paddingを少し狭めて引き締め） -->
+                <div id="score-date" class="score-date-area" style="font-size: 12px !important; font-weight: bold !important; color: #e65100 !important; background: #ffe0b2 !important; padding: 4px 8px !important; border-radius: 50px !important; margin: 0 !important; position: static !important; transform: none !important;">0がつ0にち</div>
             </div>
-            
-            <!-- 正解カウントエリア -->
-            <div id="score-count" class="score-count-area">せいかい: 0点</div>
+
+            <!-- 中央エリア：ラジカくんと、こだわり抜いた大満足の「130pxロングメーター」を完全死守！ -->
+            <div style="display: flex !important; align-items: center !important; gap: 6px !important; margin-left: 6px !important; margin-right: auto !important; flex-shrink: 0 !important;">
+                <!-- ラジカくん -->
+                <img src="radika.png" alt="ラジカくん" class="score-radika-icon" style="width: 75px !important; height: 75px !important; object-fit: contain !important; display: block !important; margin-top: -15px !important; position: relative !important; z-index: 50 !important; flex-shrink: 0 !important;">
+                <!-- メーター本体（大迫力の130px固定サイズを1ミリも縮めずにキープ） -->
+                <div id="score-gauge-main-outer" style="background: #eeeeee !important; border: 3px solid #ff9800 !important; border-radius: 50px !important; height: 22px !important; width: 180px !important; min-width: 180px !important; max-width: 180px !important; overflow: hidden !important; position: relative !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important; z-index: 10 !important; flex-shrink: 0 !important; display: block !important;">
+                    <div id="score-gauge-bar" class="score-gauge-inner"></div>
+                    <div id="score-gauge-text" style="position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #ffffff !important; font-size: 11px !important; font-weight: 900 !important; font-family: Arial, sans-serif !important; text-shadow: 1px 1px 0px #332200, -1px 1px 0px #332200, 1px -1px 0px #332200, -1px -1px 0px #332200, 1px 1px 2px rgba(0,0,0,0.8) !important; z-index: 15 !important; pointer-events: none !important;">0 / 10</div>
+                </div>
+            </div>
+
+            <!-- 右側エリア：左側がスリムになったおかげで、はみ出さずにすっぽり収まるようになった緑バッジ -->
+            <div id="score-count" class="score-count-area" style="font-size: 13px !important; font-weight: bold !important; color: #2e7d32 !important; background: #e8f5e9 !important; border: 2px solid #a5d6a7 !important; padding: 5px 8px !important; border-radius: 12px !important; flex-shrink: 0 !important; width: auto !important; min-width: 0px !important; max-width: none !important; text-align: center !important; margin: 0 !important; position: static !important; transform: none !important;">せいかい: 0点</div>
+
         </div>
+
 
 
     <h1 id="question-text">読み込み中... </h1>
@@ -1817,7 +1889,7 @@ h1 {
     let currentQuestionAttempts = 0; // 現在の問題の回答ミス回数
 
     /**
-     * 🎯 スコアボードの更新と日付自動リセットロジック
+     * 🎯 スコアボードの更新 ＆ 自動リセット誤作動防止版
      */
     function updateAndCheckScoreBoard() {
         const now = new Date();
@@ -1831,8 +1903,11 @@ h1 {
         const todayKey = `${now.getFullYear()}-${currentMonth}-${currentDate}`;
         const savedDateKey = localStorage.getItem('dockais_score_date_key');
         
-        // 0時を跨いだらデータを全自動リセット
-        if (savedDateKey !== todayKey) {
+        // ⚠️ 誤作動防止安全装置：過去のデータが「空（初めての起動）」のときだけ日付キーを登録する
+        if (!savedDateKey) {
+            localStorage.setItem('dockais_score_date_key', todayKey);
+        } else if (savedDateKey !== todayKey) {
+            // 本当に日付が違う（午前0時を跨いだ）ときだけリセットを実行
             localStorage.setItem('dockais_score_date_key', todayKey);
             localStorage.setItem('dockais_total_score', '0');
             localStorage.setItem('dockais_correct_count', '0');
@@ -1850,14 +1925,38 @@ h1 {
         const gaugeBar = document.getElementById('score-gauge-bar');
         if (gaugeBar) gaugeBar.style.width = `${gaugePercentage}%`;
 
-        // 保険パッチ：プログラム側からも外枠が縮まないようにスタイルを強制固定
-        const gaugeOuterEl = document.getElementById('score-gauge-main-outer');
-        if (gaugeOuterEl) {
-            gaugeOuterEl.style.setProperty('display', 'block', 'important');
+        // ⚠️ 修正：バーの長さに連動させず、中央に固定されたテキストエリアの数値をリアルタイムで書き換えます
+        const gaugeTextEl = document.getElementById('score-gauge-text');
+        if (gaugeTextEl) {
+            gaugeTextEl.innerText = `${totalScore} / 10`;
+        }
+        // 古いバーの中の文字はきれいに消去（リセット）
+        if (gaugeBar) gaugeBar.innerText = "";
+
+        // 🏆 新機能：点数に応じてメーターの色を3段階に全自動チェンジ！
+        if (gaugeBar) {
+            // 一度すべてのクラスをリセット
+            gaugeBar.classList.remove('gauge-medium', 'gauge-max');
+            
+            if (totalScore >= 10) {
+                // 10点以上は「お祝いレインボー」
+                gaugeBar.classList.add('gauge-max');
+            } else if (totalScore >= 4) {
+                // 4点〜9点は「きみどり」
+                gaugeBar.classList.add('gauge-medium');
+            }
+            // 0〜3点は自動的に初期の「みずいろ」になります
         }
 
         const countEl = document.getElementById('score-count');
-        if (countEl) countEl.innerText = `せいかい: ${correctCount}点`;
+        if (countEl) {
+            countEl.innerHTML = `せいかい: <span style="font-weight: 900; color: #2e7d32;">${correctCount}もん</span>`;
+            countEl.style.setProperty('min-width', '0px', 'important');
+            countEl.style.setProperty('width', 'auto', 'important');
+            
+            /* ⚠️ 究極の余白カット：左右の内側のすきまを「6px」まで極限に削り込んで細くします！ */
+            countEl.style.setProperty('padding', '5px 6px', 'important');
+        }
     }
 
     /**
