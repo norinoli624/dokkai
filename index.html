@@ -1039,7 +1039,7 @@ h1 {
                     <div id="score-date" class="score-date-area" style="font-size: 12px !important; font-weight: bold !important; color: #e65100 !important; background: #ffe0b2 !important; padding: 4px 8px !important; border-radius: 50px !important; margin: 0 0 0 4px !important; position: static !important; transform: none !important; flex-shrink: 0 !important;">0がつ0にち</div>
                     
                     <!-- ③ ラジカくんアイコン -->
-                    <img src="radika.png" alt="ラジカくん" class="score-radika-icon" style="width: 75px !important; height: 75px !important; object-fit: contain !important; display: block !important; margin-top: -15px !important; position: relative !important; z-index: 50 !important; flex-shrink: 0 !important; margin-left: 6px !important;">
+                    <img src="radika_meter.png" alt="ラジカくん" class="score-radika-icon" style="width: 75px !important; height: 75px !important; object-fit: contain !important; display: block !important; margin-top: -15px !important; position: relative !important; z-index: 50 !important; flex-shrink: 0 !important; margin-left: 6px !important;">
                     
                     <!-- ④ メーター本体 -->
                     <div id="score-gauge-main-outer" style="background: #eeeeee !important; border: 3px solid #ff9800 !important; border-radius: 50px !important; height: 22px !important; flex-grow: 1 !important; overflow: hidden !important; position: relative !important; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1) !important; z-index: 10 !important; margin: 0 12px !important; display: block !important;">
@@ -1335,53 +1335,52 @@ h1 {
         let currentBuffer = "";
         const MIN_CHAR_LENGTH = 15; // 💡 読点（、）の後の細切れを防ぐための最低文字数
 
-        // 2. 句点（。）や見出し記号（◆）を検知して、適切な長さで美しく結合・切断する
-        for (let i = 0; i < rawSegments.length; i++) {
-            const segment = rawSegments[i];
-            
-            // 独立した改行マーク（\n）がきた場合
-            if (segment === '\n') {
-                if (currentBuffer.trim() !== "") {
-                    finalChunks.push(currentBuffer);
-                }
-                finalChunks.push('\n');
-                currentBuffer = "";
-                continue;
-            }
-
-            currentBuffer += segment;
-
-            // 💡 解決の核心①：もしバッファの中に見出しの「◆」が含まれていたら、文字数に関係なく100%ここで強制切断！
-            // これにより、見出しが後ろの接続詞を巻き込んだり、フライングしてぶった切るバグを完全に封殺します。
-            if (currentBuffer.includes('◆')) {
-                if (currentBuffer.trim() !== "") {
-                    finalChunks.push(currentBuffer);
-                }
-                currentBuffer = "";
-                continue;
-            }
-
-            // 💡 解決の核心②：末尾が「。」（句点）で終わっていたら、文字数に関係なく100%ここで確定して切り出す！
-            if (segment.endsWith('。')) {
-                if (currentBuffer.trim() !== "") {
-                    finalChunks.push(currentBuffer);
-                }
-                currentBuffer = ""; 
-                continue;
-            }
-
-            // 末尾が「、」（読点）だった場合は、短すぎる接続詞（このあと、等）を防ぐため15文字判定を行う
-            if (segment.endsWith('、')) {
-                const cleanLength = currentBuffer.replace(/[\n、。 ]/g, "").length;
-                
-                // 15文字を超えている場合だけ、1つの大きな塊として切り出す
-                if (cleanLength >= MIN_CHAR_LENGTH) {
-                    finalChunks.push(currentBuffer);
-                    currentBuffer = "";
-                }
-                // 💡 15文字未満（例：「このあと、」など）の場合は、ここで区切らず、次の文章と結合するまでバッファにキープ！
-            }
-        }
+				// 2. 句点(。)や見出し記号 (◆) を検知して、適切な長さで美しく結合・切断する
+				for (let i = 0; i < rawSegments.length; i++) {
+					const segment = rawSegments[i];
+					
+					// 独立した改行マーク (\n) がきた場合
+					if (segment === '\n') {
+						if (currentBuffer.trim() !== "") {
+							finalChunks.push(currentBuffer);
+						}
+						finalChunks.push('\n');
+						currentBuffer = "";
+						continue;
+					}
+					
+					currentBuffer += segment;
+					
+					// 解決の核心①: もしバッファの中に見出しの「◆」が含まれていたら、文字数に関係なく100%ここで強制切断!
+					if (currentBuffer.includes('◆')) {
+						if (currentBuffer.trim() !== "") {
+							finalChunks.push(currentBuffer);
+						}
+						currentBuffer = "";
+						continue;
+					}
+					
+					// 【大改造・バグ撃退】末尾が「。」「」」であるか、途中に改行を含んでいたら1文として100%ここで確定して切り出す!
+					if (segment.endsWith('。') || segment.endsWith('」') || segment.includes('\n')) {
+						if (currentBuffer.trim() !== "") {
+							finalChunks.push(currentBuffer.replace(/\n/g, ""));
+						}
+						if (segment.includes('\n')) {
+							finalChunks.push('\n');
+						}
+						currentBuffer = "";
+						continue;
+					}
+					
+					// 末尾が「、」 (読点) だった場合は、短すぎる接続詞 (このあと、等)を防ぐため15文字判定を行う
+					if (segment.endsWith('、')) {
+						const cleanLength = currentBuffer.replace(/[\n、。]/g,"").length;
+						if (cleanLength >= MIN_CHAR_LENGTH) {
+							finalChunks.push(currentBuffer);
+							currentBuffer = "";
+						}
+					}
+				}
         
         // 最後に残ったバッファをすべて安全に回収
         if (currentBuffer.trim() !== "") {
